@@ -1,10 +1,10 @@
 /***** Brainstorm
 
-  Jeg synes det kunne være interessant at arbejde med data fra en API - f.eks. En Corona-Api, som giver nogle opdaterede værdier for hvor mange der er smittet i verden. Denne api(data derfra) kunne derefter påvirke kameraet, mikrofonen, Gyro inputtet etc - og man kunne dermed udarbejde nogle interessante interaktioner mellem daten og brugeren.
+  Multiplayer tron, hvor x spillere forbinder til en mobil og styrer deres figur ved hjælp af deres mobils gyroskop. Spillernes figurer kunne være forskellige former, som cirkler, trekanter, firkanter osv.
 
-  I tillæg til dette, kunne man også arbejde med lys og lyd i forhold til hvordan smitten spreder sig og fordeler sig rundt omkring i verden.
+  Når en spiller dør, så flasher spillerens skærm, så det er tydeligt, hvem der er død.
 
-  I forhold til dataanalysen synes jeg, at man skal anvende kvalitativ data - hvor man måler på hvordan brugerne oplever prototypen - forstår de f.eks idéen?, er det interessant? Er det en givende prototype? Hvad kan gøres bedre?
+  Baggrunden på skærmen kan også pulsere som et hjerteslag, hvor at hjertet, så pulser hurtigere jo mere bane der er lagt på skærmen og jo flere spillere der er røget ud
 
 */
 
