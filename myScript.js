@@ -63,8 +63,8 @@ class Player {
 
 */
 
-  constructor(position) {
-    this.type = null;
+  constructor(type) {
+    this.type = type;
     this.my_position = {latitude:0, longitude:0};
 
     // For wss to work, needed by itu, port 8081 has to be used
@@ -103,15 +103,17 @@ class Player {
 
   }
 
+  // TODO: establish connection to the mqtt_client
   // TODO: subcribe to topic on the mqtt_client
   // TODO: prevent subscriber from recieving own published messages
-  subscribeToTopic(topic) {
-
-  }
-
-  // TODO: establish connection to the mqtt_client
-  mqttConnect(client) {
-
+  mqttConnect() {
+    this.client.on("connect", function () {
+      this.client.subscribe(this.mqtt_topic, function (err) {
+        if (err) {
+          console.log("Error while subscribing to MQTT topic: " + this.mqtt_topic)
+        }
+      });
+    });
   }
 
   // TODO: implement a method for client to continualy recieve messages
