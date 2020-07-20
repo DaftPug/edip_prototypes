@@ -22,7 +22,7 @@
 */
 
 /*
-  Geolocation
+  Geolocation - Essentiel for prototype, but Nice-to-have
 
   @TODO update coordinates
   @TODO send information through MQTT
@@ -46,7 +46,7 @@ if(!navigator.geolocation) {
 }
 
 /*
-  Actuators
+  Actuators - Need-to-have
 
   Vibration(Fugitives):
   @TODO Make the phone vibrate
@@ -61,7 +61,7 @@ if(!navigator.geolocation) {
 
 
 /*
-  Clients
+  Clients - Need-to-have 
 
   @TODO implement two kinds: Hunter & Fugitive
   @TODO keep track of two list of positions: Hunters & Fugitives other than yourself
@@ -71,7 +71,7 @@ if(!navigator.geolocation) {
 */
 
 /*
-  Server
+  Server - Nice-to-Have
 
   Clients:
   @TODO Keep track of amount of hunters and fugitives
@@ -82,7 +82,7 @@ if(!navigator.geolocation) {
 */
 
 /*
-  MQTT
+  MQTT - Need-to-have
 
   @TODO implement publishing from clients
   @TODO implement clients subscribing to a topic
