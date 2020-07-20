@@ -23,6 +23,7 @@
 
 /*
   Geolocation - Essentiel for prototype, but Nice-to-have
+  https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API
 
   @TODO update coordinates
   @TODO send information through MQTT
@@ -49,6 +50,7 @@ if(!navigator.geolocation) {
   Actuators - Need-to-have
 
   Vibration(Fugitives):
+  https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate
   @TODO Make the phone vibrate
   @TODO Make the phone vibrate as a heartbeat
   @TODO Make the heart beat faster or slower depending on the hunters distance
@@ -83,6 +85,7 @@ if(!navigator.geolocation) {
 
 /*
   MQTT - Need-to-have
+  https://github.com/mqttjs/MQTT.js
 
   @TODO implement publishing from clients
   @TODO implement clients subscribing to a topic
