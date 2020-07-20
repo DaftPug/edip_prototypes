@@ -58,3 +58,22 @@ if(!navigator.geolocation) {
   @TODO Make the phones screen pulse between hot'n'cold colors
   @TODO Make the pulses depend on the distance between hunter and fugitives
 */
+
+
+/*
+  Clients
+
+  @TODO implement two kinds: Hunter & Fugitive
+
+*/
+
+/*
+  Server
+
+  Clients:
+  @TODO Keep track of amount of hunters and fugitives
+  @TODO Assign roles to clients depending on amount of hunters and fugitives
+
+  Map:
+  @TODO show a live map detailing the routes, that the hunters and fugitives take
+*/
