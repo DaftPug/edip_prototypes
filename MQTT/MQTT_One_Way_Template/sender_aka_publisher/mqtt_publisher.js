@@ -12,12 +12,11 @@ const secured = brokerList[connectToBrokerNumber].secured;
 const topic = chosenTopic;
 const myID = generatedID;
 
-
 // DISPLAY INFO IN HTML ---------------------------------
 document.getElementById("brokerName").innerText = broker;
 let httpConnectiontype = "no";
 if (secured == true) {
-	httpConnectiontype = "yes";
+  httpConnectiontype = "yes";
 }
 document.getElementById("security").innerText = httpConnectiontype;
 
@@ -31,32 +30,29 @@ mqttClient.onConnectionLost = conLost;
 // MQTT Handler functions--------------------------------
 
 function onConnect() {
-	console.log("Connected");
-	document.getElementById("brokerName").className = "info-if-connected";
-	document.getElementById("security").className = "info-if-connected";
-	document.getElementById("connectionStatus").className = "info-if-connected";
-	document.getElementById("connectionStatus").innerHTML = "connected";
-	mqttClient.subscribe(topic);
-};
-
-function sendMQTT(message) {
-	console.log("sending");
-	let mOBJ = { deviceID: myID, content: message };
-	let mSend = new Paho.MQTT.Message(JSON.stringify(mOBJ));
-	mSend.destinationName = topic;
-	document.getElementById("data").innerText = "Sending: " + mOBJ.content;
-	console.log("Sending: " + mOBJ.content);
-	mqttClient.send(mSend);
-};
-
-function conLost() {
-	document.getElementById("brokerName").className = "info-if-not-connected";
-	document.getElementById("security").className = "info-if-not-connected";
-	document.getElementById("connectionStatus").className = "info-if-not-connected";
-	document.getElementById("connectionStatus").innerText = "no connection";
-	console.log("Lost connection");
+  console.log("Connected");
+  document.getElementById("brokerName").className = "info-if-connected";
+  document.getElementById("security").className = "info-if-connected";
+  document.getElementById("connectionStatus").className = "info-if-connected";
+  document.getElementById("connectionStatus").innerHTML = "connected";
+  mqttClient.subscribe(topic);
 }
 
+function sendMQTT(message) {
+  console.log("sending");
+  let mOBJ = { deviceID: myID, content: message };
+  let mSend = new Paho.MQTT.Message(JSON.stringify(mOBJ));
+  mSend.destinationName = topic;
+  document.getElementById("data").innerText = "Sending: " + mOBJ.content;
+  console.log("Sending: " + mOBJ.content);
+  mqttClient.send(mSend);
+}
 
-
-
+function conLost() {
+  document.getElementById("brokerName").className = "info-if-not-connected";
+  document.getElementById("security").className = "info-if-not-connected";
+  document.getElementById("connectionStatus").className =
+    "info-if-not-connected";
+  document.getElementById("connectionStatus").innerText = "no connection";
+  console.log("Lost connection");
+}

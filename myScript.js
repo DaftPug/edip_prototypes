@@ -18,19 +18,17 @@
         - Hvis en klient, både fanger og jagtede, går videre uden at have løst en opgave, skal klienten tilbage og 'hente' sig selv
 */
 
-
 /*
   Global variables
 */
 
 // TODO: update lists with current positions of other clients
-var fugitive_list = []
-var hunter_list = []
+var fugitive_list = [];
+var hunter_list = [];
 
 // For wss to work, needed by itu, port 8081 has to be used
-var client = mqtt.connect('wss://test.mosquitto.org:8081')
-
-
+var client = mqtt.connect("wss://test.mosquitto.org:8081");
+var mqtt_topic = "hotncold1337";
 
 /*
   Geolocation - Essentiel for prototype, but Nice-to-have
@@ -42,18 +40,18 @@ var client = mqtt.connect('wss://test.mosquitto.org:8081')
 */
 
 function success(position) {
-  const latitude  = position.coords.latitude;
+  const latitude = position.coords.latitude;
   const longitude = position.coords.longitude;
 }
 
 function error() {
-  status.textContent = 'Unable to retrieve your location';
+  status.textContent = "Unable to retrieve your location";
 }
 
-if(!navigator.geolocation) {
-  status.textContent = 'Geolocation is not supported by your browser';
+if (!navigator.geolocation) {
+  status.textContent = "Geolocation is not supported by your browser";
 } else {
-  status.textContent = 'Locating…';
+  status.textContent = "Locating…";
   navigator.geolocation.getCurrentPosition(success, error);
 }
 
@@ -72,7 +70,6 @@ if(!navigator.geolocation) {
   TODO: Make the pulses depend on the distance between hunter and fugitives
 */
 
-
 /*
   Clients - Need-to-have 
 
@@ -86,10 +83,9 @@ if(!navigator.geolocation) {
   Fugitives:
 
 */
-
-// TODO: publish clients latitude and longitude via the MQTT network 
-function publishPosition(position) {
-
+class Client {
+  // TODO: publish clients latitude and longitude via the MQTT network
+  publishPosition(position) {}
 }
 
 /*
@@ -118,17 +114,17 @@ function publishPosition(position) {
 */
 
 // Example MQTT code
-client.on('connect', function () {
-  client.subscribe('presence', function (err) {
+client.on("connect", function () {
+  client.subscribe(mqtt_topic, function (err) {
     if (!err) {
-      client.publish('presence', 'Hello mqtt')
+      client.publish(mqtt_topic, "Hello mqtt");
     }
-  })
-})
+  });
+});
 
 // Example MQTT code
-client.on('message', function (topic, message) {
+client.on("message", function (topic, message) {
   // message is Buffer
-  console.log(message.toString())
-  client.end()
-})
+  console.log(message.toString());
+  client.end();
+});

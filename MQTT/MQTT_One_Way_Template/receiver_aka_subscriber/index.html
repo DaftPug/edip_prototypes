@@ -1,24 +1,26 @@
 <!-- saved from url=(0049)http://www.itu.dk/people/moja/expd20/mqtt_simple/ -->
 <html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+    <link rel="stylesheet" type="text/css" href="../noNeedToEdit/myStyle.css" />
+  </head>
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-    <link rel="stylesheet" type="text/css" href="../noNeedToEdit/myStyle.css">
-</head>
-
-<body>
+  <body>
     <h1>MQTT Subscriber</h1>
-    <div>Broker name: <span id="brokerName" class="info">check if connected</span> </div>
-    <div>Secured?: <span id="security" class="info">check if connected</span></div>
-    <div>Connection status: <span id="connectionStatus" class="info">no info yet!</span> </div>
+    <div>
+      Broker name: <span id="brokerName" class="info">check if connected</span>
+    </div>
+    <div>
+      Secured?: <span id="security" class="info">check if connected</span>
+    </div>
+    <div>
+      Connection status:
+      <span id="connectionStatus" class="info">no info yet!</span>
+    </div>
     <div id="data">Messages will show here</div>
-    
+  </body>
 
-
-</body>
-
-<script src="../noNeedToEdit/mqttws31.js"></script>
-<script src="../brokers.js"></script>
-<script src="mqtt_subscriber.js"></script>
-
+  <script src="../noNeedToEdit/mqttws31.js"></script>
+  <script src="../brokers.js"></script>
+  <script src="mqtt_subscriber.js"></script>
 </html>
