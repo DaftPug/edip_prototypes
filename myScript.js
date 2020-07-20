@@ -18,17 +18,7 @@
         - Hvis en klient, både fanger og jagtede, går videre uden at have løst en opgave, skal klienten tilbage og 'hente' sig selv
 */
 
-/*
-  Global variables
-*/
-
-// TODO: update lists with current positions of other clients
-var fugitive_list = [];
-var hunter_list = [];
-
-// For wss to work, needed by itu, port 8081 has to be used
-var client = mqtt.connect("wss://test.mosquitto.org:8081");
-var mqtt_topic = "hotncold1337";
+;
 
 /*
   Geolocation - Essentiel for prototype, but Nice-to-have
@@ -39,21 +29,7 @@ var mqtt_topic = "hotncold1337";
   TODO: recieve information about other clients through MQTT
 */
 
-function success(position) {
-  const latitude = position.coords.latitude;
-  const longitude = position.coords.longitude;
-}
 
-function error() {
-  status.textContent = "Unable to retrieve your location";
-}
-
-if (!navigator.geolocation) {
-  status.textContent = "Geolocation is not supported by your browser";
-} else {
-  status.textContent = "Locating…";
-  navigator.geolocation.getCurrentPosition(success, error);
-}
 
 /*
   Actuators - Need-to-have
@@ -70,6 +46,9 @@ if (!navigator.geolocation) {
   TODO: Make the pulses depend on the distance between hunter and fugitives
 */
 
+
+class Player {
+
 /*
   Clients - Need-to-have 
 
@@ -83,9 +62,65 @@ if (!navigator.geolocation) {
   Fugitives:
 
 */
-class Client {
+
+  constructor(position) {
+    this.type = null;
+    this.my_position = {latitude:0, longitude:0};
+
+    // For wss to work, needed by itu, port 8081 has to be used
+    this.mqtt_client = mqtt.connect("wss://test.mosquitto.org:8081");
+    this.mqtt_topic = "hotncold1337";
+
+    // TODO: update lists with current positions of other clients
+    this.fugitive_list = [];
+    this.hunter_list = [];
+  }
+
+  // Using https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API/Using_the_Geolocation_API
+  // as the basis for this function
+  // TODO: test if example works
+  // TODO: Fix code if it fails
+  getPosition() {
+    function success(position) {
+      this.my_position.latitude = position.coords.latitude;
+      this.my_position.longitude = position.coords.longitude;
+    }
+
+    function error() {
+      status.textContent = "Unable to retrieve your location";
+    }
+
+    if (!navigator.geolocation) {
+      status.textContent = "Geolocation is not supported by your browser";
+    } else {
+      status.textContent = "Locating…";
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+  }
+
   // TODO: publish clients latitude and longitude via the MQTT network
-  publishPosition(position) {}
+  publishPosition(position) {
+
+  }
+
+  // TODO: subcribe to topic on the mqtt_client
+  // TODO: prevent subscriber from recieving own published messages
+  subscribeToTopic(topic) {
+
+  }
+
+  // TODO: establish connection to the mqtt_client
+  mqttConnect(client) {
+
+  }
+
+  // TODO: implement a method for client to continualy recieve messages
+  recieveMessage() {
+
+  }
+
+
+
 }
 
 /*
