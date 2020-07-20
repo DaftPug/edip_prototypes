@@ -77,3 +77,16 @@ if(!navigator.geolocation) {
   Map:
   @TODO show a live map detailing the routes, that the hunters and fugitives take
 */
+
+/*
+  MQTT
+
+  @TODO implement publishing from clients
+  @TODO implement clients subscribing to a topic
+  @TODO implement that clients don't recieve their own publications
+
+  MQTT + Geo:
+  @TODO clients publish their latitude and longitude
+  @TODO clients recieve other clients latitude and longitude
+  @TODO 
+*/
