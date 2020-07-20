@@ -25,9 +25,9 @@
   Geolocation - Essentiel for prototype, but Nice-to-have
   https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API
 
-  @TODO update coordinates
-  @TODO send information through MQTT
-  @TODO recieve information about other clients through MQTT
+  TODO: update coordinates
+  TODO: send information through MQTT
+  TODO: recieve information about other clients through MQTT
 */
 
 function success(position) {
@@ -51,24 +51,28 @@ if(!navigator.geolocation) {
 
   Vibration(Fugitives):
   https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate
-  @TODO Make the phone vibrate
-  @TODO Make the phone vibrate as a heartbeat
-  @TODO Make the heart beat faster or slower depending on the hunters distance
+  TODO: Make the phone vibrate
+  TODO: Make the phone vibrate as a heartbeat
+  TODO: Make the heart beat faster or slower depending on the hunters distance
 
   Screen(Hunter):
-  @TODO Make the phones screen show a color
-  @TODO Make the phones screen pulse between hot'n'cold colors
-  @TODO Make the pulses depend on the distance between hunter and fugitives
+  TODO: Make the phones screen show a color
+  TODO: Make the phones screen pulse between hot'n'cold colors
+  TODO: Make the pulses depend on the distance between hunter and fugitives
 */
 
 
 /*
   Clients - Need-to-have 
 
-  @TODO implement two kinds: Hunter & Fugitive
-  @TODO keep track of two list of positions: Hunters & Fugitives other than yourself
-  @TODO implement the ability to switch from one type to the other
-  @TODO implement to go through the list of clients of the opposite type and react to the client that is closest
+  TODO: implement two kinds: Hunter & Fugitive
+  TODO: keep track of two list of positions: Hunters & Fugitives other than yourself
+  TODO: implement the ability to switch from one type to the other
+  TODO: implement to go through the list of clients of the opposite type and react to the client that is closest
+
+  Hunters:
+
+  Fugitives:
 
 */
 
@@ -76,23 +80,23 @@ if(!navigator.geolocation) {
   Server - Nice-to-Have
 
   Clients:
-  @TODO Keep track of amount of hunters and fugitives
-  @TODO Assign roles to clients depending on amount of hunters and fugitives
+  TODO: Keep track of amount of hunters and fugitives
+  TODO: Assign roles to clients depending on amount of hunters and fugitives
 
   Map:
-  @TODO show a live map detailing the routes, that the hunters and fugitives take
+  TODO: show a live map detailing the routes, that the hunters and fugitives take
 */
 
 /*
   MQTT - Need-to-have
   https://github.com/mqttjs/MQTT.js
 
-  @TODO implement publishing from clients
-  @TODO implement clients subscribing to a topic
-  @TODO implement that clients don't recieve their own publications
+  TODO: implement publishing from clients
+  TODO: implement clients subscribing to a topic
+  TODO: implement that clients don't recieve their own publications
 
   MQTT + Geo:
-  @TODO clients publish their latitude and longitude
-  @TODO clients recieve other clients latitude and longitude
-  @TODO 
+  TODO: clients publish their latitude and longitude
+  TODO: clients recieve other clients latitude and longitude
+  TODO: 
 */
