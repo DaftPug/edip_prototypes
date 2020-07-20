@@ -16,10 +16,21 @@
     - Hvordan fastholdes klienternes fokus på mobilen og ikke bare ved at kigge rundt?
       - De skal løse små opgaver for at få "meter at gå" og hvis de ikke løser en opgave, så står deres klient fast og kan blive fanget af fangeren
         - Hvis en klient, både fanger og jagtede, går videre uden at have løst en opgave, skal klienten tilbage og 'hente' sig selv
-
-        Testing again!
-
 */
+
+
+/*
+  Global variables
+*/
+
+// TODO: update lists with current positions of other clients
+var fugitive_list = []
+var hunter_list = []
+
+// For wss to work, needed by itu, port 8081 has to be used
+var client = mqtt.connect('wss://test.mosquitto.org:8081')
+
+
 
 /*
   Geolocation - Essentiel for prototype, but Nice-to-have
@@ -76,6 +87,11 @@ if(!navigator.geolocation) {
 
 */
 
+// TODO: publish clients latitude and longitude via the MQTT network 
+function publishPosition(position) {
+
+}
+
 /*
   Server - Nice-to-Have
 
@@ -100,3 +116,19 @@ if(!navigator.geolocation) {
   TODO: clients recieve other clients latitude and longitude
   TODO: 
 */
+
+// Example MQTT code
+client.on('connect', function () {
+  client.subscribe('presence', function (err) {
+    if (!err) {
+      client.publish('presence', 'Hello mqtt')
+    }
+  })
+})
+
+// Example MQTT code
+client.on('message', function (topic, message) {
+  // message is Buffer
+  console.log(message.toString())
+  client.end()
+})
