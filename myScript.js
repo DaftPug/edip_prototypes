@@ -45,3 +45,16 @@ if(!navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(success, error);
 }
 
+/*
+  Actuators
+
+  Vibration:
+  @TODO Make the phone vibrate
+  @TODO Make the phone vibrate as a heartbeat
+  @TODO Make the heart beat faster or slower depending on the hunters distance
+
+  Screen:
+  @TODO Make the phones screen show a color
+  @TODO Make the phones screen pulse between hot'n'cold colors
+  @TODO Make the pulses depend on the distance between hunter and fugitives
+*/
