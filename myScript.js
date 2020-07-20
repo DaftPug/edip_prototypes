@@ -48,12 +48,12 @@ if(!navigator.geolocation) {
 /*
   Actuators
 
-  Vibration:
+  Vibration(Fugitives):
   @TODO Make the phone vibrate
   @TODO Make the phone vibrate as a heartbeat
   @TODO Make the heart beat faster or slower depending on the hunters distance
 
-  Screen:
+  Screen(Hunter):
   @TODO Make the phones screen show a color
   @TODO Make the phones screen pulse between hot'n'cold colors
   @TODO Make the pulses depend on the distance between hunter and fugitives
@@ -64,6 +64,9 @@ if(!navigator.geolocation) {
   Clients
 
   @TODO implement two kinds: Hunter & Fugitive
+  @TODO keep track of two list of positions: Hunters & Fugitives other than yourself
+  @TODO implement the ability to switch from one type to the other
+  @TODO implement to go through the list of clients of the opposite type and react to the client that is closest
 
 */
 
