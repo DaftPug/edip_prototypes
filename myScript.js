@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 /***** Brainstorm
 
   En prøver at finde en person via en skærm, som ændrer farve efter hvor tæt på personen er, en anden prøver at flygte, ved at mærke telefonens vibrationer, som indikerer, at personen kommer tættere på.
@@ -18,8 +19,6 @@
         - Hvis en klient, både fanger og jagtede, går videre uden at have løst en opgave, skal klienten tilbage og 'hente' sig selv
 */
 
-;
-
 /*
   Geolocation - Essentiel for prototype, but Nice-to-have
   https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API
@@ -28,8 +27,6 @@
   TODO: send information through MQTT
   TODO: recieve information about other clients through MQTT
 */
-
-
 
 /*
   Actuators - Need-to-have
@@ -46,9 +43,6 @@
   TODO: Make the pulses depend on the distance between hunter and fugitives
 */
 
-
-class Player {
-
 /*
   Clients - Need-to-have 
 
@@ -62,67 +56,90 @@ class Player {
   Fugitives:
 
 */
+var fugitive_list = [];
+var hunter_list = [];
+var data = { latitude: 0, longitude: 0, type: null };
 
-  constructor(type) {
-    this.type = type;
-    this.my_position = {latitude:0, longitude:0};
+navigator.geolocation.watchPosition((position) => {
+  console.log(position);
+  data.latitude = position.coords.latitude;
+  data.longitude = position.coords.longitude;
+});
 
-    // For wss to work, needed by itu, port 8081 has to be used
-    this.mqtt_client = mqtt.connect("wss://test.mosquitto.org:8081");
-    this.mqtt_topic = "hotncold1337";
+// Using https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API/Using_the_Geolocation_API
+// as the basis for this function
+// TODO: test if example works
+// TODO: Fix code if it fails
+// success(position) {
+//   data.latitude = position.coords.latitude;
+//   data.longitude = position.coords.longitude;
+//   mqtt_client.publish(mqtt_topic, data);
+//   console.log("Position updated succesfuly: " + data);
+// }
 
-    // TODO: update lists with current positions of other clients
-    this.fugitive_list = [];
-    this.hunter_list = [];
-  }
+// error() {
+//   // status.textContent = "Unable to retrieve your location";
+//   console.log(
+//     "Position update failed: " + data + ", " + mqtt_topic
+//   );
+// }
 
-  // Using https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API/Using_the_Geolocation_API
-  // as the basis for this function
-  // TODO: test if example works
-  // TODO: Fix code if it fails
-  getPosition() {
-    function success(position) {
-      this.my_position.latitude = position.coords.latitude;
-      this.my_position.longitude = position.coords.longitude;
-    }
+function turnOn() {
+  mqttConnect();
+  setTimeout(() => {
+    setInterval(publishData, 1000);
+  }, 5000);
+}
 
-    function error() {
-      status.textContent = "Unable to retrieve your location";
-    }
+// TODO: publish clients latitude and longitude via the MQTT network
+function publishData() {
+  // console.log(latitude);
+  // console.log(longitude);
+  let buf = buffer.Buffer.from(JSON.stringify(data));
+  mqtt_client.publish(mqtt_topic, buf);
+  // mqtt_client.publish(mqtt_topic, data);
+  console.log("Data published succesfuly");
+}
 
-    if (!navigator.geolocation) {
-      status.textContent = "Geolocation is not supported by your browser";
+// TODO: establish connection to the mqtt_client
+// TODO: subcribe to topic on the mqtt_client
+// TODO: prevent subscriber from recieving own published messages
+
+function mqttConnect() {
+  // Connect to MQTT
+  mqtt_client = mqtt.connect("wss://test.mosquitto.org:8081");
+  mqtt_topic = "hotncold1337";
+  console.log(mqtt_client);
+  console.log(mqtt_topic);
+  mqtt_client.subscribe(mqtt_topic, { nl: true }, function (err) {
+    if (err) {
+      console.log("Error while subscribing");
     } else {
-      status.textContent = "Locating…";
-      navigator.geolocation.getCurrentPosition(success, error);
+      console.log("Subscription succesful");
     }
-  }
+  });
+  // mqtt_client.on("connect", function () {
+  //   mqtt_client.subscribe(mqtt_topic, { nl: true }, function (err) {
+  //     if (err) {
+  //       console.log(
+  //         "Error while subscribing to MQTT topic: " + mqtt_topic
+  //       );
+  //     } else {
+  //       console.log("Connection to " + mqtt_topic + " succesful");
+  //     }
+  //   });
+  // });
 
-  // TODO: publish clients latitude and longitude via the MQTT network
-  publishPosition(position) {
+  // React to recieving a message
+  mqtt_client.on("message", function (topic, message) {
+    // message is Buffer
+    recieveMessage(message);
+  });
+}
 
-  }
-
-  // TODO: establish connection to the mqtt_client
-  // TODO: subcribe to topic on the mqtt_client
-  // TODO: prevent subscriber from recieving own published messages
-  mqttConnect() {
-    this.client.on("connect", function () {
-      this.client.subscribe(this.mqtt_topic, function (err) {
-        if (err) {
-          console.log("Error while subscribing to MQTT topic: " + this.mqtt_topic)
-        }
-      });
-    });
-  }
-
-  // TODO: implement a method for client to continualy recieve messages
-  recieveMessage() {
-
-  }
-
-
-
+// TODO: implement a method for client to continualy recieve messages
+function recieveMessage(message) {
+  console.log(typeof message);
 }
 
 /*
@@ -135,6 +152,11 @@ class Player {
   Map:
   TODO: show a live map detailing the routes, that the hunters and fugitives take
 */
+class Server {
+  constructor(params) {}
+
+  createMap(x1, y1, x2, y2) {}
+}
 
 /*
   MQTT - Need-to-have
@@ -151,17 +173,26 @@ class Player {
 */
 
 // Example MQTT code
-client.on("connect", function () {
-  client.subscribe(mqtt_topic, function (err) {
-    if (!err) {
-      client.publish(mqtt_topic, "Hello mqtt");
-    }
-  });
-});
+// client.on("connect", function () {
+//   client.subscribe(mqtt_topic, function (err) {
+//     if (!err) {
+//       client.publish(mqtt_topic, "Hello mqtt");
+//     }
+//   });
+// });
 
-// Example MQTT code
-client.on("message", function (topic, message) {
-  // message is Buffer
-  console.log(message.toString());
-  client.end();
-});
+// // Example MQTT code
+// client.on("message", function (topic, message) {
+//   // message is Buffer
+//   console.log(message.toString());
+//   client.end();
+// });
+
+// const p = new Player("Boss");
+// p.turnOn();
+// setInterval(() => {
+//   console.log(p.longitude);
+// }, 1000);
+// console.log(p.longitude);
+// p.mqttConnect();
+mqttConnect();
