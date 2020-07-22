@@ -44,7 +44,7 @@
 */
 
 /*
-  Clients - Need-to-have 
+  Clients - Need-to-have
 
   TODO: implement two kinds: Hunter & Fugitive
   TODO: keep track of two list of positions: Hunters & Fugitives other than yourself
@@ -58,7 +58,9 @@
 */
 var fugitive_list = [];
 var hunter_list = [];
-var data = { latitude: 0, longitude: 0, type: null };
+var data = {latitude: 0, longitude: 0, type: null};
+var mqtt_client = () => {}
+
 
 navigator.geolocation.watchPosition((position) => {
   console.log(position);
@@ -92,11 +94,11 @@ function turnOn() {
 }
 
 // TODO: publish clients latitude and longitude via the MQTT network
-function publishData() {
+function publishData(client) {
   // console.log(latitude);
   // console.log(longitude);
   let buf = buffer.Buffer.from(JSON.stringify(data));
-  mqtt_client.publish(mqtt_topic, buf);
+  client.publish(mqtt_topic, buf);
   // mqtt_client.publish(mqtt_topic, data);
   console.log("Data published succesfuly");
 }
@@ -106,18 +108,41 @@ function publishData() {
 // TODO: prevent subscriber from recieving own published messages
 
 function mqttConnect() {
+  let clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8)
+  let options = {
+    keepalive: 10,
+    clientId: clientId,
+    protocolId: 'MQTT',
+    protocolVersion: 4,
+    clean: true,
+    reconnectPeriod: 1000,
+    connectTimeout: 30 * 1000,
+    will: {
+      topic: 'WillMsg',
+      payload: 'Connection Closed abnormally..!',
+      qos: 1,
+      retain: false
+    }
+
+  }
   // Connect to MQTT
-  mqtt_client = mqtt.connect("wss://test.mosquitto.org:8081");
+  mqtt_client = mqtt.connect("wss://test.mosquitto.org:8081", options);
   mqtt_topic = "hotncold1337";
   console.log(mqtt_client);
   console.log(mqtt_topic);
-  mqtt_client.subscribe(mqtt_topic, { nl: true }, function (err) {
-    if (err) {
-      console.log("Error while subscribing");
-    } else {
-      console.log("Subscription succesful");
-    }
-  });
+
+  mqtt_client.on("connect", function () {
+    console.log("Connected to MQTT broker, trying to subscribe to topic")
+    mqtt_client.subscribe(mqtt_topic, {nl: true}, function (err) {
+      if (err) {
+        console.log("Error while subscribing");
+      } else {
+        console.log("Subscription succesful");
+
+        setInterval(publishData(mqtt_client), 1000);
+      }
+    });
+  })
   // mqtt_client.on("connect", function () {
   //   mqtt_client.subscribe(mqtt_topic, { nl: true }, function (err) {
   //     if (err) {
@@ -133,6 +158,7 @@ function mqttConnect() {
   // React to recieving a message
   mqtt_client.on("message", function (topic, message) {
     // message is Buffer
+    console.log("Recieving message - trying to parse it")
     recieveMessage(message);
   });
 }
@@ -169,7 +195,7 @@ class Server {
   MQTT + Geo:
   TODO: clients publish their latitude and longitude
   TODO: clients recieve other clients latitude and longitude
-  TODO: 
+  TODO:
 */
 
 // Example MQTT code
@@ -196,3 +222,4 @@ class Server {
 // console.log(p.longitude);
 // p.mqttConnect();
 mqttConnect();
+
