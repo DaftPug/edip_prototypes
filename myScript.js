@@ -59,9 +59,45 @@
 */
 var fugitive_list = [];
 var hunter_list = [];
-var data = {latitude: 0, longitude: 0, type: null};
-var mqtt_client = () => {}
+var data = { latitude: 0, longitude: 0, type: null, id: "" };
+var mqtt_client = () => {};
 
+var opts = {
+  id: "spinny",
+  lines: 20, // The number of lines to draw
+  length: 38, // The length of each line
+  width: 17, // The line thickness
+  radius: 45, // The radius of the inner circle
+  scale: 1, // Scales overall size of the spinner
+  corners: 1, // Corner roundness (0..1)
+  // color: '#ffffff', // CSS color or array of colors
+  color: [
+    "#ff7a7a",
+    "#ff9447",
+    "#ffd17a",
+    "#ffeb7a",
+    "#feed6d",
+    "#f1ff5c",
+    "#67f25a",
+    "#3afdbf",
+    "#95e9e2",
+    "#7abdff",
+    "#7a7aff",
+    "#c67aff",
+  ], // CSS color or array of colors
+  fadeColor: "transparent", // CSS color or array of colors
+  speed: 1, // Rounds per second
+  rotate: 0, // The rotation offset
+  animation: "spinner-line-shrink", // The CSS animation name for the lines
+  direction: 1, // 1: clockwise, -1: counterclockwise
+  zIndex: 2e9, // The z-index (defaults to 2000000000)
+  className: "spinner", // The CSS class to assign to the spinner
+  top: "50%", // Top position relative to parent
+  left: "50%", // Left position relative to parent
+  shadow: "0 0 1px transparent", // Box-shadow for the lines
+  position: "absolute", // Element positioning
+};
+// Creating the new spinner
 
 navigator.geolocation.watchPosition((position) => {
   console.log(position);
@@ -73,25 +109,12 @@ navigator.geolocation.watchPosition((position) => {
 // as the basis for this function
 // TODO: test if example works
 // TODO: Fix code if it fails
-// success(position) {
-//   data.latitude = position.coords.latitude;
-//   data.longitude = position.coords.longitude;
-//   mqtt_client.publish(mqtt_topic, data);
-//   console.log("Position updated succesfuly: " + data);
-// }
-
-// error() {
-//   // status.textContent = "Unable to retrieve your location";
-//   console.log(
-//     "Position update failed: " + data + ", " + mqtt_topic
-//   );
-// }
 
 function turnOn() {
   mqttConnect();
   setTimeout(() => {
     setInterval(publishData, 1000);
-  }, 5000);
+  }, 7000);
 }
 
 // TODO: publish clients latitude and longitude via the MQTT network
@@ -109,64 +132,82 @@ function publishData(client) {
 // TODO: prevent subscriber from recieving own published messages
 
 function mqttConnect() {
-  let clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8)
+  let clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
+  data.id = clientId;
   let options = {
     keepalive: 10,
     clientId: clientId,
-    protocolId: 'MQTT',
+    protocolId: "MQTT",
     protocolVersion: 4,
     clean: true,
     reconnectPeriod: 1000,
     connectTimeout: 30 * 1000,
     will: {
-      topic: 'WillMsg',
-      payload: 'Connection Closed abnormally..!',
+      topic: "WillMsg",
+      payload: "Connection Closed abnormally..!",
       qos: 1,
-      retain: false
-    }
-
-  }
+      retain: false,
+    },
+  };
   // Connect to MQTT
-  mqtt_client = mqtt.connect("wss://test.mosquitto.org:8081", options);
+  broker = "wss://test.mosquitto.org:8081";
+  mqtt_client = mqtt.connect(broker, options);
   mqtt_topic = "hotncold1337";
-  console.log(mqtt_client);
-  console.log(mqtt_topic);
 
+  console.log("Attempt to connect to broker");
+  startLoadingScreen(broker);
   mqtt_client.on("connect", function () {
-    console.log("Connected to MQTT broker, trying to subscribe to topic")
-    mqtt_client.subscribe(mqtt_topic, {nl: true}, function (err) {
+    console.log("Connected to MQTT broker, trying to subscribe to topic");
+    mqtt_client.subscribe(mqtt_topic, { nl: true }, function (err) {
       if (err) {
         console.log("Error while subscribing");
       } else {
         console.log("Subscription succesful");
-
-        setInterval(publishData(mqtt_client), 1000);
       }
     });
-  })
-  // mqtt_client.on("connect", function () {
-  //   mqtt_client.subscribe(mqtt_topic, { nl: true }, function (err) {
-  //     if (err) {
-  //       console.log(
-  //         "Error while subscribing to MQTT topic: " + mqtt_topic
-  //       );
-  //     } else {
-  //       console.log("Connection to " + mqtt_topic + " succesful");
-  //     }
-  //   });
-  // });
+    stopLoadScreen();
+    setInterval(publishData(mqtt_client), 1000);
+  });
 
   // React to recieving a message
   mqtt_client.on("message", function (topic, message) {
     // message is Buffer
-    console.log("Recieving message - trying to parse it")
     recieveMessage(message);
   });
 }
 
 // TODO: implement a method for client to continualy recieve messages
 function recieveMessage(message) {
-  console.log(typeof message);
+  console.log("Recieved message - trying to parse it");
+  let temp = JSON.parse(message.toString());
+  console.log("Parse succesful:");
+  console.log(temp);
+}
+
+function startLoadingScreen(broker) {
+  console.log("Starting loading Screen");
+  let body = document.body;
+  let loadingText = document.createElement("h1");
+  let text = document.createTextNode("Connecting to " + broker);
+  loadingText.appendChild(text);
+  let div = document.createElement("div");
+  div.setAttribute("id", "spinny");
+  div.append(loadingText);
+  body.append(div);
+  let spinner = new Spin.Spinner(opts).spin(div);
+  // setTimeout(stopLoadScreen, 5000);
+  // spinner.start();
+}
+
+function stopLoadScreen() {
+  console.log("Stopping loading Screen");
+  let spinner = document.getElementById("spinny");
+  console.log(spinner);
+  console.log(document.body);
+  // html_body.removeChild(spinner);
+
+  spinner.parentNode.removeChild(spinner);
+  // spinner.remove();
 }
 
 /*
@@ -196,35 +237,8 @@ class Server {
   MQTT + Geo:
   TODO: clients publish their latitude and longitude
   TODO: clients recieve other clients latitude and longitude
-<<<<<<< Updated upstream
   TODO:
-=======
-  ocInstall coc-marketplace
->>>>>>> Stashed changes
 */
 
-// Example MQTT code
-// client.on("connect", function () {
-//   client.subscribe(mqtt_topic, function (err) {
-//     if (!err) {
-//       client.publish(mqtt_topic, "Hello mqtt");
-//     }
-//   });
-// });
-
-// // Example MQTT code
-// client.on("message", function (topic, message) {
-//   // message is Buffer
-//   console.log(message.toString());
-//   client.end();
-// });
-
-// const p = new Player("Boss");
-// p.turnOn();
-// setInterval(() => {
-//   console.log(p.longitude);
-// }, 1000);
-// console.log(p.longitude);
-// p.mqttConnect();
 mqttConnect();
-
+// turnOn();
