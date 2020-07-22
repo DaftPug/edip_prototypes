@@ -32,6 +32,7 @@
   Actuators - Need-to-have
 
   Vibration(Fugitives):
+
   https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate
   TODO: Make the phone vibrate
   TODO: Make the phone vibrate as a heartbeat
@@ -195,7 +196,11 @@ class Server {
   MQTT + Geo:
   TODO: clients publish their latitude and longitude
   TODO: clients recieve other clients latitude and longitude
+<<<<<<< Updated upstream
   TODO:
+=======
+  ocInstall coc-marketplace
+>>>>>>> Stashed changes
 */
 
 // Example MQTT code
