@@ -5,6 +5,7 @@ document.getElementById("myid").innerText = id;
 var data = {latitude: 0, longitude: 0, type: null, id: ""};
 var mqtt_client = () => {};
 var if_connected = false
+var known_peers = new Map();
 
 // Get permission and start location updates
 function start() {
@@ -198,7 +199,9 @@ function publishData(client, data) {
 
 function recieveMessage(message) {
     let temp = JSON.parse(message.toString());
+    known_peers.set(temp.id, Date.now());
     console.log("Recieved:", temp);
+    console.log(known_peers);
 
     // Check distance
 
