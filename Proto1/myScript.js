@@ -9,6 +9,28 @@ var dist_threshold = 30;
 var device_threshold = 3;
 var device_warn_threshold = 1;
 var device_danger_threshold = 2;
+let currentTest = test1;
+
+var warningSound = new Audio('Clock.mp3');
+
+function setTest(element) {
+    currentTest = element.id
+    console.log("Current test:", currentTest);
+}
+
+function soundPlay() {
+    setInterval(warningSound.play(), 2000)
+}
+function constantVibrate() {
+    setInterval(window.navigator.vibrate(1000), 1000);
+}
+function smallIntervalVibrate() {
+    setInterval(window.navigator.vibrate(400), 2000);
+}
+function bigIntervalVibrate() {
+    setInterval(window.navigator.vibrate(200), 2000);
+}
+
 // Get permission and start location updates
 function start() {
     //When the start-button is pressed, hide the button
