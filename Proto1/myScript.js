@@ -1,7 +1,6 @@
 // Global variables
 const id = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 console.log("My ID:", id);
-var data = {latitude: 0, longitude: 0, type: null, id: ""};
 var mqtt_client = () => {};
 var if_connected = false
 
@@ -179,6 +178,7 @@ function mqttConnect() {
 function publishData(client, data) {
     // console.log(latitude);
     // console.log(longitude);
+    console.log("Trying to publish the following:", data)
     let buf = buffer.Buffer.from(JSON.stringify(data));
     client.publish(mqtt_topic, buf);
     // mqtt_client.publish(mqtt_topic, data);
