@@ -1,4 +1,6 @@
 // Global variables
+const id = "mqttjs_" + Math.random().toString(16).substr(2, 8);
+console.log("My ID:", id);
 var data = {latitude: 0, longitude: 0, type: null, id: ""};
 var mqtt_client = () => {};
 var if_connected = false
@@ -42,13 +44,19 @@ function startLocationUpdate() {
 
 //GPS works, can put functions in there
 function success(position) {
-    data.latitude = position.coords.latitude;
-    data.longitude = position.coords.longitude;
+    let latitude = position.coords.latitude;
+    let longitude = position.coords.longitude;
+    let data = {
+        latitude: latitude,
+        longitude: longitude,
+        id: id
+    };
     if (if_connected) {
-        publishData(mqtt_client);
+        console.log(data)
+        publishData(mqtt_client, data);
     }
 
-    console.debug("My position:", latitude, longitude)
+    console.log("My position:", latitude, longitude)
 
     // 1. Udregn antal i dangerzone
 
@@ -125,11 +133,9 @@ var opts = {
 };
 
 function mqttConnect() {
-    let clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
-    data.id = clientId;
     let options = {
         keepalive: 10,
-        clientId: clientId,
+        clientId: id,
         protocolId: "MQTT",
         protocolVersion: 4,
         clean: true,
@@ -170,13 +176,14 @@ function mqttConnect() {
     });
 }
 
-function publishData(client) {
+function publishData(client, data) {
     // console.log(latitude);
     // console.log(longitude);
     let buf = buffer.Buffer.from(JSON.stringify(data));
     client.publish(mqtt_topic, buf);
     // mqtt_client.publish(mqtt_topic, data);
     console.log("Data published succesfuly");
+    client.end();
 }
 
 function recieveMessage(message) {
