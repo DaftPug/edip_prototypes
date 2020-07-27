@@ -1,8 +1,57 @@
-navigator.geolocation.watchPosition((position) => {
-    console.log(position);
-    data.latitude = position.coords.latitude;
-    data.longitude = position.coords.longitude;
-});
+// Get permission and start location updates
+function start() {
+    //When the start-button is pressed, hide the button
+    document.getElementById("startbutton").style.display = "none";
+
+    // iOS13 device   
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+        .then(permissionState => {
+            if (permissionState == 'granted') {
+                startLocationUpdate();
+            }
+        })
+        .catch(console.error);
+    }
+    // Android and other unsafe devices :P
+    else {
+        startLocationUpdate();
+    }
+}
+
+function startLocationUpdate(){        
+    if(navigator.geolocation){
+       var options = {
+            timeout:60000,
+            maximumAge: 10000,
+            enableHighAccuracy: true
+        };
+       geoLoc = navigator.geolocation;
+       watchID = geoLoc.watchPosition(success, errorHandler, options);
+    } else {
+       alert("Sorry, browser does not support geolocation!");
+    }
+}
+
+//GPS works, can put functions in there
+function success(position) {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    
+    console.debug("My position:", latitude, longitude)
+
+    //Run functions below here. They will update everytime the GPS coordinates updates.
+    //sammenligneDistancer(latitude, longitude);
+    //distance();
+}
+ 
+function errorHandler(err) {
+    if(err.code == 1) {
+       alert("Error: Access is denied!");
+    } else if( err.code == 2) {
+       alert("Error: Position is unavailable!");
+    }
+}
 
 // Get distance in KM between to coordinate sets
 function getDistanceBetweenCoords(lat1, lon1, lat2, lon2) {
