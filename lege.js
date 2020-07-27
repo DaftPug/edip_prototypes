@@ -9,43 +9,48 @@ var coordLat = 55.6594453;
 var coordLon = 12.5907759;
 
 var goodDistance = true;
+var badDistance = false;
 
 var distanceTime = 0;
 
-//Random sound files can go here
-let mySound = document.getElementById("myAudioPlayer");
-/*
-document.addEventListener("click", mouseClick)
-function mouseClick(e){
-    soundPlay();
-}
-*/
-
+var warningSound = new Audio('sounds/Clock.mp3');
+mySound = warningSound;    
 //Audio goes in here. We mainly just need 1 sound, 1 song, or the likes.
 function soundPlay(){
-    var clapYay = new Audio('sounds/Clap.mp3');
-    mySound = clapYay;
-    mySound.play();
+    setInterval(mySound.play(), 2000) 
 }
+function constantVibrate(){
+    setInterval(window.navigator.vibrate(1000), 1000);
+}
+function smallIntervalVibrate(){
+    setInterval(window.navigator.vibrate(400), 2000);
+}
+function bigIntervalVibrate(){
+    setInterval(window.navigator.vibrate(200), 2000);
+}
+//Three functions to harass the players for 
+function Distance(){ //
 
-function distance(){
-    document.getElementById("vibrate").innerText = "You're a good citizen"
-    if(goodDistance == true){
-        
-        if(distanceTime > 0){
-            //Code for the exiting the circle goes here.
-               
-            distanceTime = 0;
+    if(goodDistance){ //This is the good distance "function"
+        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job";
+            if(distanceTime > 0){
+                alert("You were in a dangerous spot. Good job moving away from the danger!");
+                distanceTime = 0;
         }
-    } else if(goodDistance == false){
-        //Code for entering a circle goes here... e.g. vibration, sound, alarms, light
-        document.getElementById("vibrate").innerText = ("Get out you wet napkin")
-        console.log("Jeg ryster")
-        distanceTime++;
-        
-        window.navigator.vibrate(200)
-        //alert("You are too close to a dangerous place, get out")
+    } else if(!goodDistance){ //This is for a warning before it gets too bad
+            document.getElementById("MessageToUser").innerText = "You need to get away from all these people";
+            distanceTime += 0.1;
+            //soundPlay(); //This is for sound test case
+            //constantVibrate();
+            //smallIntervalVibrate();
+    } else if(badDistance){ //This is for when shit hits the fan, and the user needs to get out right away
+            document.getElementById("MessageToUser").innerText = "Beam me up Scotty! It's dangerous in here!";
+            distanceTime += 0.1;
+            //soundPlay(); //This is for sound test case
+            //constantVibrate();
+            //bigIntervalVibrate();
     }
+    
 }
 
 function sammenligneDistancer(lat, long){
@@ -55,13 +60,18 @@ function sammenligneDistancer(lat, long){
         var distanceInM = Math.floor(getDistanceFromLatLonInKm(lat, long, coordLat, coordLon)*1000)
         
         console.log("Distance in meters: " + distanceInM);
-        document.getElementById("distance").innerText = distanceInM;
-
-        if(distanceInM < 20){
-            goodDistance = false
-        } else if(distanceInM > 20){
-            goodDistance = true;
-        } 
+        document.getElementById("distance").innerText = "Distance in meters: " + distanceInM;
+        
+        //Measures the distancing between points/players. Can be written in whatever way or form, just needs to call the "Distance();" function
+        var topLim = 20; // Top Limit Distance
+        var botLim = 10; // Minimum Limit Distance
+        if(distanceInM > topLim){
+            Distance();
+        } else if(distanceInM < topLim && distanceInM >= botLim){
+            Distance();
+        } else if(distanceInM < botLim){
+            Distance();
+        }
 } 
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
