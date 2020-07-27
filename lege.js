@@ -18,7 +18,7 @@ var caseThreeBool = false;
 
 var distanceTime = 0;
 
-var warningSound = new Audio('sounds/Clock.mp3');
+var warningSound = new Audio('Clock.mp3');
 mySound = warningSound;    
 //Audio goes in here. We mainly just need 1 sound, 1 song, or the likes.
 function soundPlay(){
