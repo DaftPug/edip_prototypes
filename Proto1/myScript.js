@@ -1,6 +1,8 @@
 // Global variables
 const id = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 console.log("My ID:", id);
+document.getElementById("myid").innerText = id;
+var data = {latitude: 0, longitude: 0, type: null, id: ""};
 var mqtt_client = () => {};
 var if_connected = false
 
@@ -45,6 +47,11 @@ function startLocationUpdate() {
 function success(position) {
     let latitude = position.coords.latitude;
     let longitude = position.coords.longitude;
+
+    // Update UI
+    document.getElementById("lat").innerText = latitude;
+    document.getElementById("lon").innerText = longitude;
+
     let data = {
         latitude: latitude,
         longitude: longitude,
