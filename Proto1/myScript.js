@@ -7,6 +7,27 @@ var if_connected = false
 var known_peers = new Map();
 var dist_threshold = 30;
 var device_threshold = 3;
+let currentTest = test1;
+
+var warningSound = new Audio('Clock.mp3');
+
+function setTest(element){
+    currentTest = element.id
+    console.log("Current test:", currentTest);
+}
+
+function soundPlay(){
+    setInterval(warningSound.play(), 2000) 
+}
+function constantVibrate(){
+    setInterval(window.navigator.vibrate(1000), 1000);
+}
+function smallIntervalVibrate(){
+    setInterval(window.navigator.vibrate(400), 2000);
+}
+function bigIntervalVibrate(){
+    setInterval(window.navigator.vibrate(200), 2000);
+}
 
 // Get permission and start location updates
 function start() {
