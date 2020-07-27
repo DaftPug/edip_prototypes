@@ -9,7 +9,12 @@ var coordLat = 55.6594453;
 var coordLon = 12.5907759;
 
 var goodDistance = true;
+var mediumDistance = false;
 var badDistance = false;
+
+var caseOneBool = false;
+var caseTwoBool = false;
+var caseThreeBool = false;
 
 var distanceTime = 0;
 
@@ -28,82 +33,102 @@ function smallIntervalVibrate(){
 function bigIntervalVibrate(){
     setInterval(window.navigator.vibrate(200), 2000);
 }
+
 function caseOne(){
-    if(!caseTwo && !caseThree){
-        caseOne = true;
-    }
+        console.log("Case One Is True");
+        caseOneBool = true;
+        document.getElementById("caseOneButton").style.display = "none";
+        document.getElementById("caseTwoButton").style.display = "none";
+        document.getElementById("caseThreeButton").style.display = "none";
 }
 function caseTwo(){
-    if(!caseOne && !caseThree){
-        caseTwo = true;
-    }
+        console.log("Case Two Is True");
+        caseTwoBool = true;
+        document.getElementById("caseOneButton").style.display = "none";
+        document.getElementById("caseTwoButton").style.display = "none";
+        document.getElementById("caseThreeButton").style.display = "none";
 }
 function caseThree(){
-    if(!caseOne && !caseTwo){
-        caseThree = true;
-    }
+        console.log("Case Three Is True");
+        caseThreeBool = true;
+        document.getElementById("caseOneButton").style.display = "none";
+        document.getElementById("caseTwoButton").style.display = "none";
+        document.getElementById("caseThreeButton").style.display = "none";
 }
 //Three functions to harass the players for 
-function DistanceOne(){ //
-if(caseOne){
+function DistanceOne(){ //Sound, constant
+if(caseOneBool == true){
     if(goodDistance){ //This is the good distance "function"
-        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job";
+        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job, Case One";
         badDistance = false;
+        mediumDistance = false;
             if(distanceTime > 0){
                 alert("You were in a dangerous spot. Good job moving away from the danger!");
                 distanceTime = 0;
         }
-    } else if(!goodDistance){ //This is for a warning before it gets too bad
+    } else if(mediumDistance){ //This is for a warning before it gets too bad
             document.getElementById("MessageToUser").innerText = "You need to get away from all these people";
             distanceTime += 0.1;
             soundPlay(); //This is for sound test case
             badDistance = false;
+            goodDistance = false;
     } else if(badDistance){ //This is for when shit hits the fan, and the user needs to get out right away
             document.getElementById("MessageToUser").innerText = "Beam me up Scotty! It's dangerous in here!";
             distanceTime += 0.1;
             soundPlay(); //This is for sound test case
+            mediumDistance = false;
+            goodDistance = false;
         }
     }
 }
 function DistanceTwo(){ //
-if(caseTwo){    
+if(caseTwoBool == true){    
     if(goodDistance){ //This is the good distance "function"
-        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job";
+        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job, Case Two";
         badDistance = false;
+        mediumDistance = false;
             if(distanceTime > 0){
                 alert("You were in a dangerous spot. Good job moving away from the danger!");
                 distanceTime = 0;
         }
-    } else if(!goodDistance){ //This is for a warning before it gets too bad
+    } else if(mediumDistance){ //This is for a warning before it gets too bad
             document.getElementById("MessageToUser").innerText = "You need to get away from all these people";
             distanceTime += 0.1;
             constantVibrate();
             badDistance = false;
+            goodDistance = false;
     } else if(badDistance){ //This is for when shit hits the fan, and the user needs to get out right away
             document.getElementById("MessageToUser").innerText = "Beam me up Scotty! It's dangerous in here!";
             distanceTime += 0.1;
             constantVibrate();
+            mediumDistance = false;
+            goodDistance = false;
         }
     }
 }
 function DistanceThree(){ //
-if(caseThree){
+if(caseThreeBool == true){
     if(goodDistance){ //This is the good distance "function"
-        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job";
+        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job, Case Three";
         badDistance = false;
+        mediumDistance = false;
             if(distanceTime > 0){
                 alert("You were in a dangerous spot. Good job moving away from the danger!");
                 distanceTime = 0;
-        }
-    } else if(!goodDistance){ //This is for a warning before it gets too bad
+    }
+    } else if(mediumDistance){ //This is for a warning before it gets too bad
             document.getElementById("MessageToUser").innerText = "You need to get away from all these people";
             distanceTime += 0.1;
             smallIntervalVibrate();
             badDistance = false;
+            goodDistance = false;
     } else if(badDistance){ //This is for when shit hits the fan, and the user needs to get out right away
             document.getElementById("MessageToUser").innerText = "Beam me up Scotty! It's dangerous in here!";
+            goodDistance = false
             distanceTime += 0.1;
             BigIntervalVibrate();
+            mediumDistance = false;
+            goodDistance = false;
         }
     }
 }
@@ -123,12 +148,57 @@ function sammenligneDistancer(lat, long){
         //Measures the distancing between points/players. Can be written in whatever way or form, just needs to call the "Distance();" function
         var topLim = 20; // Top Limit Distance
         var botLim = 10; // Minimum Limit Distance
-        if(distanceInM > topLim){
-            Distance();
-        } else if(distanceInM < topLim && distanceInM >= botLim){
-            Distance();
-        } else if(distanceInM < botLim){
-            Distance();
+        if(distanceInM > topLim){ //Good Distance
+            if(caseOneBool){
+                badDistance = false;
+                mediumDistance = false;
+                goodDistance = true;
+                DistanceOne();
+            } else if(caseTwoBool){
+                badDistance = false;
+                mediumDistance = false;
+                goodDistance = true;
+                DistanceTwo();
+            } else if(caseThreeBool){
+                badDistance = false;
+                mediumDistance = false;
+                goodDistance = true;
+                DistanceThree();
+            }
+        } else if(distanceInM < topLim && distanceInM >= botLim){ //Medium Distance
+            if(caseOneBool){
+                badDistance = false;
+                mediumDistance = true;
+                goodDistance = false;
+                DistanceOne();
+            } else if(caseTwoBool){
+                badDistance = false;
+                mediumDistance = true;
+                goodDistance = false;
+                DistanceTwo();
+            } else if(caseThreeBool){
+                badDistance = false;
+                mediumDistance = true;
+                goodDistance = false;
+                DistanceThree();
+            }
+        } else if(distanceInM < botLim){ //Bad Distance
+            if(caseOneBool){
+                badDistance = true;
+                mediumDistance = false;
+                goodDistance = false;
+                DistanceOne();
+            } else if(caseTwoBool){
+                badDistance = true;
+                mediumDistance = false;
+                goodDistance = false;
+                DistanceTwo();
+            } else if(caseThreeBool){
+                badDistance = true;
+                mediumDistance = false;
+                goodDistance = false;
+                DistanceThree();
+            }
         }
 } 
 
