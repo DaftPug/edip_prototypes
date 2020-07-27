@@ -7,7 +7,8 @@ var if_connected = false
 var known_peers = new Map();
 var dist_threshold = 30;
 var device_threshold = 3;
-
+var device_warn_threshold = 1;
+var device_danger_threshold = 2;
 // Get permission and start location updates
 function start() {
     //When the start-button is pressed, hide the button
@@ -78,7 +79,7 @@ function success(position) {
             dangerzone++
         }
 
-        if (dangerzone > dist_threshold) {
+        if (dangerzone < dist_threshold) {
             //shit hits the fan!
         }
         document.getElementById("dangerzone").innerText = "Dangerzone counter: " + dangerzone;
