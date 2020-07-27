@@ -2,7 +2,6 @@
 const id = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 console.log("My ID:", id);
 document.getElementById("myid").innerText = id;
-var data = {latitude: 0, longitude: 0, type: null, id: ""};
 var mqtt_client = () => {};
 var if_connected = false
 var known_peers = new Map();
