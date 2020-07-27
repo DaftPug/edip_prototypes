@@ -15,6 +15,7 @@ var warningSound = new Audio('Clock.mp3');
 function setTest(element) {
     currentTest = element.id
     console.log("Current test:", currentTest);
+    document.getElementById("currentTest").innerText = currentTest;
 }
 
 function soundPlay() {
