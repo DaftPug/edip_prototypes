@@ -78,6 +78,9 @@ function success(position) {
             dangerzone++
         }
 
+        if (dangerzone > dist_threshold) {
+            //shit hits the fan!
+        }
         document.getElementById("dangerzone").innerText = "Dangerzone counter: " + dangerzone;
 
     }
