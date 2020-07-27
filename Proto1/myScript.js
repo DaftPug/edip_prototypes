@@ -1,3 +1,8 @@
+// Global variables
+var data = {latitude: 0, longitude: 0, type: null, id: ""};
+var mqtt_client = () => {};
+var if_connected = false
+
 // Get permission and start location updates
 function start() {
     //When the start-button is pressed, hide the button
@@ -8,6 +13,7 @@ function start() {
         DeviceMotionEvent.requestPermission()
             .then(permissionState => {
                 if (permissionState == 'granted') {
+                    mqttConnect();
                     startLocationUpdate();
                 }
             })
@@ -15,6 +21,7 @@ function start() {
     }
     // Android and other unsafe devices :P
     else {
+        mqttConnect();
         startLocationUpdate();
     }
 }
@@ -35,8 +42,11 @@ function startLocationUpdate() {
 
 //GPS works, can put functions in there
 function success(position) {
-    var latitude = position.coords.latitude;
-    var longitude = position.coords.longitude;
+    data.latitude = position.coords.latitude;
+    data.longitude = position.coords.longitude;
+    if (if_connected) {
+        publishData(mqtt_client);
+    }
 
     console.debug("My position:", latitude, longitude)
 
@@ -72,9 +82,6 @@ function getDistanceBetweenCoords(lat1, lon1, lat2, lon2) {
 function deg2rad(deg) {
     return deg * (Math.PI / 180)
 }
-
-var data = {latitude: 0, longitude: 0, type: null, id: ""};
-var mqtt_client = () => {};
 
 // For Spinner
 var opts = {
@@ -145,6 +152,7 @@ function mqttConnect() {
                 console.log("Error while subscribing");
             } else {
                 console.log("Subscription succesful");
+                if_connected = true;
             }
         });
         stopLoadScreen();
