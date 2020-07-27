@@ -40,6 +40,10 @@ function success(position) {
 
     console.debug("My position:", latitude, longitude)
 
+    // 1. Udregn antal i dangerzone
+
+    // 2. Publish på topic
+
     //Run functions below here. They will update everytime the GPS coordinates updates.
     //sammenligneDistancer(latitude, longitude);
     //distance();
