@@ -6,10 +6,9 @@ var mqtt_client = () => {};
 var if_connected = false
 var known_peers = new Map();
 var dist_threshold = 30;
-var device_threshold = 3;
 var device_warn_threshold = 1;
 var device_danger_threshold = 2;
-let currentTest = test1;
+let currentTest = "test1";
 
 var warningSound = new Audio('Clock.mp3');
 
@@ -100,14 +99,37 @@ function success(position) {
         if (meters < dist_threshold) {
             dangerzone++
         }
-
-        if (dangerzone < dist_threshold) {
-            //shit hits the fan!
-        }
-        document.getElementById("dangerzone").innerText = "Dangerzone counter: " + dangerzone;
-
     }
-    console.log("People in the dangerzone", dangerzone)
+
+    if (currentTest == "test1") {
+        console.log("Test1")
+        if (dangerzone > device_warn_threshold) {
+            soundPlay()
+        }
+    } else if (currentTest == "test2") {
+        console.log("Test2")
+        if (dangerzone > device_warn_threshold) {
+            constantVibrate()
+        }
+    } else if (currentTest == "test3") {
+        console.log("Test3")
+        if (dangerzone > device_danger_threshold) {
+            // CHAOS MODE
+            bigIntervalVibrate()
+        } else if (dangerzone > device_warn_threshold) {
+            // IMPENDING DOOM
+            smallIntervalVibrate()
+        } else {
+            // EVERYTHING IS FINE
+        }
+    } else {
+        console.log("Something went wrong with the testing logic")
+    }
+
+
+
+    document.getElementById("dangerzone").innerText = "Dangerzone counter: " + dangerzone;
+    // console.log("People in the dangerzone", dangerzone)
     console.log("My position:", latitude, longitude)
 
     // 1. Udregn antal i dangerzone
