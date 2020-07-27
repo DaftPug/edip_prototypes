@@ -28,11 +28,27 @@ function smallIntervalVibrate(){
 function bigIntervalVibrate(){
     setInterval(window.navigator.vibrate(200), 2000);
 }
+function caseOne(){
+    if(!caseTwo && !caseThree){
+        caseOne = true;
+    }
+}
+function caseTwo(){
+    if(!caseOne && !caseThree){
+        caseTwo = true;
+    }
+}
+function caseThree(){
+    if(!caseOne && !caseTwo){
+        caseThree = true;
+    }
+}
 //Three functions to harass the players for 
-function Distance(){ //
-
+function DistanceOne(){ //
+if(caseOne){
     if(goodDistance){ //This is the good distance "function"
         document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job";
+        badDistance = false;
             if(distanceTime > 0){
                 alert("You were in a dangerous spot. Good job moving away from the danger!");
                 distanceTime = 0;
@@ -40,18 +56,58 @@ function Distance(){ //
     } else if(!goodDistance){ //This is for a warning before it gets too bad
             document.getElementById("MessageToUser").innerText = "You need to get away from all these people";
             distanceTime += 0.1;
-            //soundPlay(); //This is for sound test case
-            //constantVibrate();
-            //smallIntervalVibrate();
+            soundPlay(); //This is for sound test case
+            badDistance = false;
     } else if(badDistance){ //This is for when shit hits the fan, and the user needs to get out right away
             document.getElementById("MessageToUser").innerText = "Beam me up Scotty! It's dangerous in here!";
             distanceTime += 0.1;
-            //soundPlay(); //This is for sound test case
-            //constantVibrate();
-            //bigIntervalVibrate();
+            soundPlay(); //This is for sound test case
+        }
     }
-    
 }
+function DistanceTwo(){ //
+if(caseTwo){    
+    if(goodDistance){ //This is the good distance "function"
+        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job";
+        badDistance = false;
+            if(distanceTime > 0){
+                alert("You were in a dangerous spot. Good job moving away from the danger!");
+                distanceTime = 0;
+        }
+    } else if(!goodDistance){ //This is for a warning before it gets too bad
+            document.getElementById("MessageToUser").innerText = "You need to get away from all these people";
+            distanceTime += 0.1;
+            constantVibrate();
+            badDistance = false;
+    } else if(badDistance){ //This is for when shit hits the fan, and the user needs to get out right away
+            document.getElementById("MessageToUser").innerText = "Beam me up Scotty! It's dangerous in here!";
+            distanceTime += 0.1;
+            constantVibrate();
+        }
+    }
+}
+function DistanceThree(){ //
+if(caseThree){
+    if(goodDistance){ //This is the good distance "function"
+        document.getElementById("MessageToUser").innerText = "You're keeping a good distance, good job";
+        badDistance = false;
+            if(distanceTime > 0){
+                alert("You were in a dangerous spot. Good job moving away from the danger!");
+                distanceTime = 0;
+        }
+    } else if(!goodDistance){ //This is for a warning before it gets too bad
+            document.getElementById("MessageToUser").innerText = "You need to get away from all these people";
+            distanceTime += 0.1;
+            smallIntervalVibrate();
+            badDistance = false;
+    } else if(badDistance){ //This is for when shit hits the fan, and the user needs to get out right away
+            document.getElementById("MessageToUser").innerText = "Beam me up Scotty! It's dangerous in here!";
+            distanceTime += 0.1;
+            BigIntervalVibrate();
+        }
+    }
+}
+
 
 function sammenligneDistancer(lat, long){
 
@@ -61,6 +117,8 @@ function sammenligneDistancer(lat, long){
         
         console.log("Distance in meters: " + distanceInM);
         document.getElementById("distance").innerText = "Distance in meters: " + distanceInM;
+        
+        
         
         //Measures the distancing between points/players. Can be written in whatever way or form, just needs to call the "Distance();" function
         var topLim = 20; // Top Limit Distance
@@ -87,11 +145,9 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 
     return d;
 }
-  
 function deg2rad(deg) {
     return deg * (Math.PI/180)
   }
-
 
 //GPS Coords code
 function start() {
@@ -113,7 +169,6 @@ function start() {
         startLocationUpdate();
     }
 }
-
 function startLocationUpdate(){        
     if(navigator.geolocation){
        var options = {
@@ -135,10 +190,8 @@ function startLocationUpdate(){
 
     //Run functions below here. They will update everytime the GPS coordinates updates.
     sammenligneDistancer(latitude, longitude);
-    distance();
 
  }
- 
  function errorHandler(err) {
     if(err.code == 1) {
        alert("Error: Access is denied!");
