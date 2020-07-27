@@ -5,6 +5,8 @@ document.getElementById("myid").innerText = id;
 var mqtt_client = () => {};
 var if_connected = false
 var known_peers = new Map();
+var dist_threshold = 30;
+var device_threshold = 3;
 
 // Get permission and start location updates
 function start() {
@@ -61,6 +63,25 @@ function success(position) {
         publishData(mqtt_client, data);
     }
 
+    let dangerzone = 0
+
+    for (const [key, value] of known_peers.entries()) {
+        console.log("!!!!! HEJ !!!!!!")
+        console.log(key, value)
+        temp_data = known_peers.get(key)
+        dist = getDistanceBetweenCoords(latitude, longitude, temp_data.latitude, temp_data.longitude)
+        meters = Math.floor(dist * 1000)
+        console.log("Distance:", meters)
+
+        console.log("!!!!! FARVEL !!!!!!")
+        if (meters < dist_threshold) {
+            dangerzone++
+        }
+
+        document.getElementById("dangerzone").innerText = "Dangerzone counter: " + dangerzone;
+
+    }
+    console.log("People in the dangerzone", dangerzone)
     console.log("My position:", latitude, longitude)
 
     // 1. Udregn antal i dangerzone
@@ -199,7 +220,15 @@ function publishData(client, data) {
 function recieveMessage(message) {
     let temp = JSON.parse(message.toString());
     if (temp.id != id) {
-        known_peers.set(temp.id, Date.now());
+        let lat = temp.latitude;
+        let long = temp.longitude
+        // let dist = getDistanceBetweenCoords(lat1, lon1, lat2, lon2)
+        known_peers.set(temp.id,
+            {
+                latitude: lat,
+                longitude: long,
+                time: Date.now()
+            });
         console.log("Recieved:", temp);
         console.log(known_peers);
     }
