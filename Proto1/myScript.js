@@ -51,7 +51,6 @@ function success(position) {
         id: id
     };
     if (if_connected) {
-        console.log(data)
         publishData(mqtt_client, data);
     }
 
@@ -165,7 +164,6 @@ function mqttConnect() {
             }
         });
         stopLoadScreen();
-        setInterval(publishData(mqtt_client), 1000);
     });
 
     // React to recieving a message
@@ -176,21 +174,27 @@ function mqttConnect() {
 }
 
 function publishData(client, data) {
+<<<<<<< HEAD
     // console.log(latitude);
     // console.log(longitude);
     console.log("Trying to publish the following:", data)
+=======
+>>>>>>> f9ba0ce06fdde5bc3df37253c1f356e026879c6f
     let buf = buffer.Buffer.from(JSON.stringify(data));
     client.publish(mqtt_topic, buf);
     // mqtt_client.publish(mqtt_topic, data);
-    console.log("Data published succesfuly");
+    console.log("Published:", data);
     client.end();
 }
 
 function recieveMessage(message) {
-    console.log("Recieved message - trying to parse it");
     let temp = JSON.parse(message.toString());
-    console.log("Parse succesful:");
-    console.log(temp);
+    console.log("Recieved:", temp);
+
+    // Check distance
+
+    // If inside danger zone, add to array
+    // Else ignore
 }
 
 function startLoadingScreen(broker) {
@@ -211,8 +215,6 @@ function startLoadingScreen(broker) {
 function stopLoadScreen() {
     console.log("Stopping loading Screen");
     let spinner = document.getElementById("spinny");
-    console.log(spinner);
-    console.log(document.body);
     // html_body.removeChild(spinner);
 
     spinner.parentNode.removeChild(spinner);
