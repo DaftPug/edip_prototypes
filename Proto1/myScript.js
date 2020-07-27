@@ -171,20 +171,22 @@ function mqttConnect() {
         // message is Buffer
         recieveMessage(message);
     });
+    mqtt_client.on("disconnect", function () {
+        // message is Buffer
+        // recieveMessage(message);
+        console.log("Disconnected")
+    });
 }
 
 function publishData(client, data) {
-<<<<<<< HEAD
     // console.log(latitude);
     // console.log(longitude);
-    console.log("Trying to publish the following:", data)
-=======
->>>>>>> f9ba0ce06fdde5bc3df37253c1f356e026879c6f
+    // console.log("Trying to publish the following:", data)
     let buf = buffer.Buffer.from(JSON.stringify(data));
     client.publish(mqtt_topic, buf);
     // mqtt_client.publish(mqtt_topic, data);
     console.log("Published:", data);
-    client.end();
+    // client.end();
 }
 
 function recieveMessage(message) {
