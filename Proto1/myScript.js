@@ -198,9 +198,11 @@ function publishData(client, data) {
 
 function recieveMessage(message) {
     let temp = JSON.parse(message.toString());
-    known_peers.set(temp.id, Date.now());
-    console.log("Recieved:", temp);
-    console.log(known_peers);
+    if (temp.id != id) {
+        known_peers.set(temp.id, Date.now());
+        console.log("Recieved:", temp);
+        console.log(known_peers);
+    }
 
     // Check distance
 
