@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Awesome prototype</title>
+    <link rel="stylesheet" href="./Sources/spin.css" />
+  </head>
+  <body>
+    <button onclick="start()" id="startbutton">Start Sensors!</button>
+    <p id="myid"></p>
+    <p id="lat"></p>
+    <p id="lon"></p>
+    <p id="dangerzone"></p>
+
+    <button id="test1" onclick="setTest(this)">Test 1</button>
+    <button id="test2" onclick="setTest(this)">Test 2</button>
+    <button id="test3" onclick="setTest(this)">Test 3</button>
+
+    <p id="currentTest">test1</p>
+
+    <h1 id="state">Crickets...</h1>
+
+  </body>
+  <script src="./Sources/browserMqtt.js" charset="utf-8"></script>
+  <script src="./Sources/buffer.js" charset="utf-8"></script>
+  <script src="./Sources/spin.umd.js"></script>
+
+  <script src="myScript.js" charset="utf-8"></script>
+</html>

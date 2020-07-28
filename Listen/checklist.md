@@ -1,0 +1,13 @@
+- [ ] MQTT
+- [ ] Watchposition
+- [ ] Distance
+- [ ] Algoritme
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
