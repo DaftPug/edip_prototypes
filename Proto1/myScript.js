@@ -10,6 +10,19 @@ var device_warn_threshold = 1;
 var device_danger_threshold = 2;
 let currentTest = "test1";
 
+// Test setup
+known_peers.set("test_id_1", {
+    latitude: 55.659313,
+    longitude: 12.591852,
+    time: Date.now()
+});
+
+known_peers.set("test_id_2", {
+    latitude: 55.659489,
+    longitude: 12.591914,
+    time: Date.now()
+});
+
 var warningSound = new Audio('Clock.mp3');
 
 function setTest(element) {
@@ -18,16 +31,21 @@ function setTest(element) {
     document.getElementById("currentTest").innerText = currentTest;
 }
 
+//FIXME ? Interval on interval on interval
 function soundPlay() {
+    document.getElementById("state").innerText = "Playing sound";
     setInterval(warningSound.play(), 2000)
 }
 function constantVibrate() {
+    document.getElementById("state").innerText = "Constant vibrate";
     setInterval(window.navigator.vibrate(1000), 1000);
 }
 function smallIntervalVibrate() {
+    document.getElementById("state").innerText = "Small interval vibrate";
     setInterval(window.navigator.vibrate(400), 2000);
 }
 function bigIntervalVibrate() {
+    document.getElementById("state").innerText = "Big interval vibrate";
     setInterval(window.navigator.vibrate(200), 2000);
 }
 
@@ -106,11 +124,15 @@ function success(position) {
         console.log("Test1")
         if (dangerzone > device_warn_threshold) {
             soundPlay()
+        } else {
+            document.getElementById("state").innerText = "Crickets....";
         }
     } else if (currentTest == "test2") {
         console.log("Test2")
         if (dangerzone > device_warn_threshold) {
             constantVibrate()
+        } else {
+            document.getElementById("state").innerText = "Crickets....";
         }
     } else if (currentTest == "test3") {
         console.log("Test3")
@@ -122,6 +144,7 @@ function success(position) {
             smallIntervalVibrate()
         } else {
             // EVERYTHING IS FINE
+            document.getElementById("state").innerText = "Crickets....";
         }
     } else {
         console.log("Something went wrong with the testing logic")
