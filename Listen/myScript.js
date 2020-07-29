@@ -4,18 +4,68 @@ var mqtt_client = () => {};
 var if_connected = false;
 var known_peers = new Map();
 
-// Test setup
-known_peers.set("test_id_1", {
-  latitude: 55.659313,
-  longitude: 12.591852,
-  time: Date.now(),
-});
+class FakePerson {
+  constructor(id, lat, long) {
+    this.data = {
+      id: id,
+      latitude: lat,
+      longitude: long,
+      time: Date.now(),
+    };
 
-known_peers.set("test_id_2", {
-  latitude: 55.659489,
-  longitude: 12.591914,
-  time: Date.now(),
-});
+    this.options = {
+      keepalive: 10,
+      clientId: this.data.id,
+      protocolId: "MQTT",
+      protocolVersion: 4,
+      clean: true,
+      reconnectPeriod: 1000,
+      connectTimeout: 30 * 1000,
+      will: {
+        topic: "WillMsg",
+        payload: "Connection Closed abnormally..!",
+        qos: 1,
+        retain: false,
+      },
+    };
+    this.broker = "wss://test.mosquitto.org:8081";
+    this.mqtt_client = mqtt.connect(this.broker, this.options);
+    this.mqtt_topic = "hotncold1337";
+    this.buf = buffer.Buffer.from(JSON.stringify(this.data));
+    console.log("FakePerson created", this.data.id);
+    this.mqtt_client.on("connect", function () {
+      console.log(
+        "Fake Connected to MQTT broker, trying to subscribe to topic"
+      );
+      this.mqtt_client.subscribe(this.mqtt_topic, { nl: true }, function (err) {
+        if (err) {
+          console.log("Error while Fake subscribing");
+        } else {
+          console.log("Fake Subscription succesful");
+
+          setInterval(
+            this.mqtt_client.publish(this.mqtt_topic, this.buf),
+            1000
+          );
+        }
+      });
+    });
+  }
+}
+
+const test_1 = new FakePerson("test_id_01", 55.659313, 12.591852);
+// Test setup
+// known_peers.set("test_id_1", {
+//   latitude: 55.659313,
+//   longitude: 12.591852,
+//   time: Date.now(),
+// });
+
+// known_peers.set("test_id_2", {
+//   latitude: 55.659489,
+//   longitude: 12.591914,
+//   time: Date.now(),
+// });
 
 function placeholder() {
   for (const [key, value] of known_peers.entries()) {
