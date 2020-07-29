@@ -3,9 +3,19 @@ const id = "bigbrother_" + Math.random().toString(16).substr(2, 8);
 var mqtt_client = () => {};
 var if_connected = false;
 var known_peers = new Map();
+var bot_coordinates = [
+  { latitude: 55.659499, longitude: 12.591931 },
+  { latitude: 55.659445, longitude: 12.59191 },
+  { latitude: 55.659423, longitude: 12.591892 },
+  { latitude: 55.659349, longitude: 12.591882 },
+  { latitude: 55.659349, longitude: 12.591852 },
+];
+var bot_list = [];
 
 class FakePerson {
   constructor(id, lat, long) {
+    this.publish = this.publish.bind(this);
+    this.connect = this.connect.bind(this);
     this.data = {
       id: id,
       latitude: lat,
@@ -13,7 +23,13 @@ class FakePerson {
       time: Date.now(),
     };
 
-    this.options = {
+    this.mqtt_client = () => {};
+
+    console.log("FakePerson created", this.data.id);
+  }
+
+  connect() {
+    let options = {
       keepalive: 10,
       clientId: this.data.id,
       protocolId: "MQTT",
@@ -28,32 +44,62 @@ class FakePerson {
         retain: false,
       },
     };
-    this.broker = "wss://test.mosquitto.org:8081";
-    this.mqtt_client = mqtt.connect(this.broker, this.options);
-    this.mqtt_topic = "hotncold1337";
-    this.buf = buffer.Buffer.from(JSON.stringify(this.data));
-    console.log("FakePerson created", this.data.id);
-    this.mqtt_client.on("connect", function () {
-      console.log(
-        "Fake Connected to MQTT broker, trying to subscribe to topic"
-      );
-      this.mqtt_client.subscribe(this.mqtt_topic, { nl: true }, function (err) {
-        if (err) {
-          console.log("Error while Fake subscribing");
-        } else {
-          console.log("Fake Subscription succesful");
+    let broker = "wss://test.mosquitto.org:8081";
+    this.mqtt_client = mqtt.connect(broker, options);
+  }
 
-          setInterval(
-            this.mqtt_client.publish(this.mqtt_topic, this.buf),
-            1000
-          );
-        }
-      });
-    });
+  get client() {
+    return this.mqtt_client;
+  }
+
+  get getData() {
+    return this.data;
+  }
+
+  set getData(new_data) {
+    this.data.id = new_data.id;
+    this.data.latitude = new_data.latitude;
+    this.data.longitude = new_data.longitude;
+    this.data.time = Date.now();
+  }
+
+  publish(client, data) {
+    let buf = buffer.Buffer.from(JSON.stringify(data));
+    let mqtt_topic = "hotncold1337";
+    console.log("" + data.id + " trying to publish!");
+    client.publish(mqtt_topic, buf);
   }
 }
 
-const test_1 = new FakePerson("test_id_01", 55.659313, 12.591852);
+function createBots(list) {
+  let i = 1;
+  bot_coordinates.forEach((element) => {
+    let bot_name = "test_id_0" + i;
+    i++;
+    let new_bot = new FakePerson(bot_name, element.latitude, element.longitude);
+    bot_list.push(new_bot);
+  });
+}
+
+function connectBots(bot_list) {
+  bot_list.forEach((element) => {
+    element.connect();
+  });
+}
+
+function startBots(bot_list) {
+  bot_list.forEach((element) => {
+    setInterval(element.publish(element.client, element.getData), 1000);
+  });
+}
+
+function run() {
+  createBots(bot_coordinates);
+  connectBots(bot_list);
+  startBots(bot_list);
+}
+
+run();
 // Test setup
 // known_peers.set("test_id_1", {
 //   latitude: 55.659313,
@@ -299,4 +345,4 @@ function stopLoadScreen() {
   // spinner.remove();
 }
 
-mqttConnect();
+// mqttConnect();
