@@ -6,24 +6,44 @@ var mqtt_client = () => {};
 var if_connected = false
 var known_peers = new Map();
 var dist_threshold = 30;
-var device_warn_threshold = 1;
-var device_danger_threshold = 2;
+var device_warn_threshold = 0;
+var device_danger_threshold = 5;
 let currentTest = "test1";
+let iamindanger = false;
 
 // Test setup
 known_peers.set("test_id_1", {
-    latitude: 55.659313,
-    longitude: 12.591852,
+    latitude: 55.659499,
+    longitude: 12.591931,
     time: Date.now()
 });
 
 known_peers.set("test_id_2", {
-    latitude: 55.659489,
-    longitude: 12.591914,
+    latitude: 55.659445,
+    longitude: 12.591910,
+    time: Date.now()
+});
+
+known_peers.set("test_id_3", {
+    latitude: 55.659423,
+    longitude: 12.591892,
+    time: Date.now()
+});
+
+known_peers.set("test_id_4", {
+    latitude: 55.659399,
+    longitude: 12.591882,
+    time: Date.now()
+});
+
+known_peers.set("test_id_5", {
+    latitude: 55.659349,
+    longitude: 12.591867,
     time: Date.now()
 });
 
 var warningSound = new Audio('Clock.mp3');
+var successSound = new Audio('success.mp3');
 
 function setTest(element) {
     currentTest = element.id
@@ -34,19 +54,18 @@ function setTest(element) {
 //FIXME ? Interval on interval on interval
 function soundPlay() {
     document.getElementById("state").innerText = "Playing sound";
-    setInterval(warningSound.play(), 2000)
+    warningSound.play();
 }
-function constantVibrate() {
-    document.getElementById("state").innerText = "Constant vibrate";
-    setInterval(window.navigator.vibrate(1000), 1000);
+
+function successSoundAbe() {
+    document.getElementById("state").innerText = "Success sound";
+    successSound.play();
 }
-function smallIntervalVibrate() {
-    document.getElementById("state").innerText = "Small interval vibrate";
-    setInterval(window.navigator.vibrate(400), 2000);
-}
-function bigIntervalVibrate() {
-    document.getElementById("state").innerText = "Big interval vibrate";
-    setInterval(window.navigator.vibrate(200), 2000);
+
+function vibrate(count) {
+    let time = count*200
+    window.navigator.vibrate(time);
+    document.getElementById("state").innerText = "Vibrating " + time + "ms";
 }
 
 // Get permission and start location updates
@@ -106,6 +125,7 @@ function success(position) {
 
     let dangerzone = 0
 
+    // Kører for hver kendte person
     for (const [key, value] of known_peers.entries()) {
         console.log("!!!!! HEJ !!!!!!")
         console.log(key, value)
@@ -144,6 +164,23 @@ function success(position) {
             smallIntervalVibrate()
         } else {
             // EVERYTHING IS FINE
+            document.getElementById("state").innerText = "Crickets....";
+        }
+    } else if (currentTest == "test4") {
+        console.log("Test4")
+        if (dangerzone > 0) {
+            iamindanger = true;
+            vibrate(dangerzone);
+            if(dangerzone >= 4) {
+                soundPlay();
+            }
+        } else {
+            // EVERYTHING IS FINE
+            if(iamindanger) {
+                // Success SOundDdd MOTHER FUCKER YEAH HAHAHAHAH!111
+                successSoundAbe();
+                iamindanger = false;
+            } 
             document.getElementById("state").innerText = "Crickets....";
         }
     } else {
