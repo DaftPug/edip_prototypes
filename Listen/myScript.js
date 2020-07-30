@@ -343,6 +343,13 @@ function scanProximity(peers) {
 
 function peerScan(peer_list) {}
 
+function updatePeers(peer_one, peer_two) {
+  let p_one_prox = peer_proximity.get(peer_one);
+  let p_two_prox = peer_proximity.get(peer_two);
+  peer_proximity.set(peer_one, p_one_prox++);
+  peer_proximity.set(peer_two, p_two_prox++);
+}
+
 function initPeers() {
   let peer_list = [];
   for (const key of known_peers.entries()) {
@@ -350,7 +357,7 @@ function initPeers() {
     peer_proximity.set(key, 0);
   }
   console.log("peer_proximity:", peer_proximity);
-  console.log("peer_list:", peer_list)
+  console.log("peer_list:", peer_list);
   return peer_list;
 }
 
