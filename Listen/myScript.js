@@ -89,14 +89,22 @@ function connectBots(bot_list) {
 
 function startBots(bot_list) {
   bot_list.forEach((element) => {
-    setInterval(element.publish(element.client, element.getData), 1000);
+    publishBot(element);
   });
+}
+function publishBot(bot) {
+  bot.publish(bot.client, bot.getData);
+
+  // setTimeout(publishBot(bot), 3000);
 }
 
 function run() {
   createBots(bot_coordinates);
   connectBots(bot_list);
-  startBots(bot_list);
+  setInterval(() => {
+    startBots(bot_list);
+    console.log("this works!");
+  }, 1000);
 }
 
 run();
