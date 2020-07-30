@@ -4,6 +4,7 @@ var mqtt_client = () => {};
 var if_connected = false;
 var known_peers = new Map();
 var peer_proximity = new Map();
+var dist_threshold = 30;
 
 var bot_coordinates = [
   { latitude: 55.659499, longitude: 12.591931 },
@@ -27,6 +28,11 @@ class FakePerson {
 
     this.mqtt_client = () => {};
 
+    known_peers.set(id, {
+      latitude: lat,
+      longitude: long,
+      time: Date.now(),
+    });
     console.log("FakePerson created", this.data.id);
   }
 
@@ -274,7 +280,9 @@ function updateTable() {
     deleteTable(table_element);
     createTable(table_element);
   }
+  console.log("Table:", table_element);
   createTableHead(table_element);
+  createTableRows(table_element);
 }
 
 function createTableHead(table_element) {
@@ -293,57 +301,101 @@ function createTableHead(table_element) {
   t_latlong.appendChild(text);
   t_head.appendChild(t_latlong);
 
-  let t_ppl_within_threshold = document.getElementById("div");
+  let t_ppl_within_threshold = document.createElement("div");
   t_ppl_within_threshold.setAttribute("class", "rTableHead");
-  text = document.createTextNode("People who are too close");
+  text = document.createTextNode("Nr. of people in proximity");
   t_ppl_within_threshold.appendChild(text);
   t_head.appendChild(t_ppl_within_threshold);
-
-  table_element.appendChild(t_head);
+  console.log("t_head:", t_head);
+  table_element.append(t_head);
 }
 
 function createTableRows(table_element) {
   let t_body = document.createElement("div");
   t_body.setAttribute("class", "rTableBody");
-  for (const [key, value] of known_peers.entries()) {
+  scanProximity();
+  for (const key of known_peers.entries()) {
+    let row = document.createElement("div");
+    row.setAttribute("class", "rTableRow");
+    let cell_id = document.createElement("div");
+    cell_id.setAttribute("class", "rTableCell");
+    let text = document.createTextNode(key);
+    cell_id.appendChild(text);
+    row.appendChild(cell_id);
+    let cell_latlong = document.createElement("div");
+    cell_latlong.setAttribute("class", "rTableCell");
+    let t_peer = known_peers.get(key[0]);
+    let t_lat = t_peer.latitude;
+    let t_long = t_peer.longitude;
+    text = document.createTextNode("Lat: " + t_lat + ", Long: " + t_long);
+    cell_latlong.appendChild(text);
+    row.appendChild(cell_latlong);
+    let cell_prox = document.createElement("div");
+    cell_prox.setAttribute("class", "rTableCell");
+    let prox = peer_proximity.get(key);
+    text = document.createTextNode(prox);
+    cell_prox.appendChild(text);
+    row.appendChild(cell_prox);
+    t_body.appendChild(row);
   }
+  table_element.appendChild(t_body);
 }
 
 function createTable(table_element) {
   table_element = document.createElement("div");
   table_element.setAttribute("class", "rTable");
   table_element.setAttribute("id", "table");
+  document.body.appendChild(table_element);
 }
 
 function deleteTable(table_element) {
   table_element.parentNode.removeChild(table_element);
 }
 
-function scanProximity(peers) {
+function scanProximity() {
   let peer_list = initPeers();
-  for (const [key, value] of known_peers.entries()) {
-    console.log("!!!!! HEJ !!!!!!");
-    console.log(key, value);
-    temp_data = known_peers.get(key);
-    dist = getDistanceBetweenCoords(
-      latitude,
-      longitude,
-      temp_data.latitude,
-      temp_data.longitude
-    );
-    meters = Math.floor(dist * 1000);
-    console.log("Distance:", meters);
+  peerScan(peer_list);
+  console.log(peer_proximity);
+}
 
-    console.log("!!!!! FARVEL !!!!!!");
-    if (meters < dist_threshold) {
-      dangerzone++;
+function peerScan(peer_list) {
+  if (peer_list.length > 1) {
+    let peer_key = peer_list.shift();
+    let peer = known_peers.get(peer_key[0]);
+    console.log("peerScan key:", peer_key);
+    console.log("peerScan known_peers:", known_peers);
+    console.log("peerScan peer:", peer);
+    console.log("peerScan peer_list:", peer_list);
+    let peer_lat = peer.latitude;
+    let peer_long = peer.longitude;
+    for (var i = 0, len = peer_list.length; i < len; i++) {
+      let temp_peer = known_peers.get(peer_list[i][0]);
+      let temp_peer_lat = temp_peer.latitude;
+      let temp_peer_long = temp_peer.longitude;
+      let dist = getDistanceBetweenCoords(
+        peer_lat,
+        peer_long,
+        temp_peer_lat,
+        temp_peer_long
+      );
+      let meters = Math.floor(dist * 1000);
+      if (meters > dist_threshold) {
+        updatePeers(peer, temp_peer);
+      }
     }
+
+    peerScan(peer_list);
   }
 }
 
-function peerScan(peer_list) {}
-
 function updatePeers(peer_one, peer_two) {
+  let debug = 1;
+  if (debug == 1) {
+    console.log();
+    console.log();
+    console.log();
+    console.log();
+  }
   let p_one_prox = peer_proximity.get(peer_one);
   let p_two_prox = peer_proximity.get(peer_two);
   peer_proximity.set(peer_one, p_one_prox++);
@@ -392,6 +444,10 @@ function run() {
   setInterval(() => {
     startBots(bot_list);
     console.log("this works!");
+  }, 1000);
+  setInterval(() => {
+    updateTable();
+    console.log("Table updated");
   }, 1000);
 }
 
