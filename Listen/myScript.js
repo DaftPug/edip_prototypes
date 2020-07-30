@@ -3,6 +3,8 @@ const id = "bigbrother_" + Math.random().toString(16).substr(2, 8);
 var mqtt_client = () => {};
 var if_connected = false;
 var known_peers = new Map();
+var peer_proximity = new Map();
+
 var bot_coordinates = [
   { latitude: 55.659499, longitude: 12.591931 },
   { latitude: 55.659445, longitude: 12.59191 },
@@ -98,16 +100,6 @@ function publishBot(bot) {
   // setTimeout(publishBot(bot), 3000);
 }
 
-function run() {
-  createBots(bot_coordinates);
-  connectBots(bot_list);
-  setInterval(() => {
-    startBots(bot_list);
-    console.log("this works!");
-  }, 1000);
-}
-
-run();
 // Test setup
 // known_peers.set("test_id_1", {
 //   latitude: 55.659313,
@@ -327,7 +319,40 @@ function deleteTable(table_element) {
   table_element.parentNode.removeChild(table_element);
 }
 
-function scanVicinity(id) {}
+function scanProximity(peers) {
+  let peer_list = initPeers();
+  for (const [key, value] of known_peers.entries()) {
+    console.log("!!!!! HEJ !!!!!!");
+    console.log(key, value);
+    temp_data = known_peers.get(key);
+    dist = getDistanceBetweenCoords(
+      latitude,
+      longitude,
+      temp_data.latitude,
+      temp_data.longitude
+    );
+    meters = Math.floor(dist * 1000);
+    console.log("Distance:", meters);
+
+    console.log("!!!!! FARVEL !!!!!!");
+    if (meters < dist_threshold) {
+      dangerzone++;
+    }
+  }
+}
+
+function peerScan(peer_list) {}
+
+function initPeers() {
+  let peer_list = [];
+  for (const key of known_peers.entries()) {
+    peer_list.push(key);
+    peer_proximity.set(key, 0);
+  }
+  console.log("peer_proximity:", peer_proximity);
+  console.log("peer_list:", peer_list)
+  return peer_list;
+}
 
 function startLoadingScreen(broker) {
   console.log("Starting loading Screen");
@@ -354,3 +379,13 @@ function stopLoadScreen() {
 }
 
 // mqttConnect();
+function run() {
+  createBots(bot_coordinates);
+  connectBots(bot_list);
+  setInterval(() => {
+    startBots(bot_list);
+    console.log("this works!");
+  }, 1000);
+}
+
+run();
