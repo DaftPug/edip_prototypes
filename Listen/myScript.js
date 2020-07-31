@@ -46,6 +46,7 @@ class FakePerson {
   }
 
   connect() {
+    let mqtt_topic = "hotncold1337";
     let options = {
       keepalive: 10,
       clientId: this.data.id,
@@ -63,6 +64,16 @@ class FakePerson {
     };
     let broker = "wss://test.mosquitto.org:8081";
     this.mqtt_client = mqtt.connect(broker, options);
+    this.mqtt_client.on("connect", function () {
+      console.log("Connected to MQTT broker, trying to subscribe to topic");
+    });
+    this.mqtt_client.subscribe(mqtt_topic, { nl: true }, function (err) {
+      if (err) {
+        // console.log(this.data.id + ": Error while subscribing");
+      } else {
+        // console.log(this.data.id + ": Subscription succesful");
+      }
+    });
   }
 
   get client() {
@@ -83,7 +94,7 @@ class FakePerson {
   publish(client, data) {
     let buf = buffer.Buffer.from(JSON.stringify(data));
     let mqtt_topic = "hotncold1337";
-    console.log("" + data.id + " trying to publish!");
+    // console.log("" + data.id + " trying to publish!");
     client.publish(mqtt_topic, buf);
   }
 }
@@ -251,7 +262,10 @@ function mqttConnect() {
     });
     stopLoadScreen();
   });
-
+  mqtt_client.on("message", function (topic, message) {
+    // message is Buffer
+    recieveMessage(message);
+  });
   // React to recieving a message
   mqtt_client.on("message", function (topic, message) {
     // message is Buffer
@@ -285,21 +299,25 @@ function recieveMessage(message) {
     longitude: long,
     time: Date.now(),
   });
-  console.log("Recieved:", temp);
-  console.log(known_peers);
+  // console.log("Recieved:", temp);
+  // console.log(known_peers);
 }
 
 function updateTable() {
   let table_element = document.getElementById("table");
   if (table_element == null) {
-    createTable(table_element);
+    table_element = createTable(table_element);
+    // console.log("Table:", table_element);
+    // table_element = document.getElementById("table");
+    createTableHead(table_element);
+    createTableRows(table_element);
   } else {
     deleteTable(table_element);
-    createTable(table_element);
+    table_element = createTable(table_element);
+    // console.log("Table:", table_element);
+    createTableHead(table_element);
+    createTableRows(table_element);
   }
-  console.log("Table:", table_element);
-  createTableHead(table_element);
-  createTableRows(table_element);
 }
 
 function createTableHead(table_element) {
@@ -320,10 +338,10 @@ function createTableHead(table_element) {
 
   let t_ppl_within_threshold = document.createElement("div");
   t_ppl_within_threshold.setAttribute("class", "rTableHead");
-  text = document.createTextNode("Nr. of people in proximity");
+  text = document.createTextNode("No. of people in proximity");
   t_ppl_within_threshold.appendChild(text);
   t_head.appendChild(t_ppl_within_threshold);
-  console.log("t_head:", t_head);
+  // console.log("t_head:", t_head);
   table_element.append(t_head);
 }
 
@@ -331,7 +349,8 @@ function createTableRows(table_element) {
   let t_body = document.createElement("div");
   t_body.setAttribute("class", "rTableBody");
   scanProximity();
-  for (const key of known_peers.entries()) {
+  for (const [key, value] of known_peers.entries()) {
+    // console.log("Key:", key);
     let row = document.createElement("div");
     row.setAttribute("class", "rTableRow");
     let cell_id = document.createElement("div");
@@ -341,7 +360,7 @@ function createTableRows(table_element) {
     row.appendChild(cell_id);
     let cell_latlong = document.createElement("div");
     cell_latlong.setAttribute("class", "rTableCell");
-    let t_peer = known_peers.get(key[0]);
+    let t_peer = known_peers.get(key);
     let t_lat = t_peer.latitude;
     let t_long = t_peer.longitude;
     text = document.createTextNode("Lat: " + t_lat + ", Long: " + t_long);
@@ -350,6 +369,8 @@ function createTableRows(table_element) {
     let cell_prox = document.createElement("div");
     cell_prox.setAttribute("class", "rTableCell");
     let prox = peer_proximity.get(key);
+    console.log("KEY:", key);
+    console.log("PROX:", prox);
     text = document.createTextNode(prox);
     cell_prox.appendChild(text);
     row.appendChild(cell_prox);
@@ -358,11 +379,12 @@ function createTableRows(table_element) {
   table_element.appendChild(t_body);
 }
 
-function createTable(table_element) {
-  table_element = document.createElement("div");
+function createTable() {
+  let table_element = document.createElement("div");
   table_element.setAttribute("class", "rTable");
   table_element.setAttribute("id", "table");
   document.body.appendChild(table_element);
+  return table_element;
 }
 
 function deleteTable(table_element) {
@@ -372,21 +394,26 @@ function deleteTable(table_element) {
 function scanProximity() {
   let peer_list = initPeers();
   peerScan(peer_list);
-  console.log(peer_proximity);
+  // console.log(peer_proximity);
 }
 
 function peerScan(peer_list) {
   let debug = 1;
   if (peer_list.length > 1) {
     let peer_key = peer_list.shift();
-    let peer = known_peers.get(peer_key[0]);
+    let peer = known_peers.get(peer_key);
     let peer_lat = peer.latitude;
     let peer_long = peer.longitude;
+
+    // for (const [key, value] of known_peers.entries()) {
+    // }
     for (var i = 0, len = peer_list.length; i < len; i++) {
-      let temp_peer = known_peers.get(peer_list[i][0]);
-      let temp_peer_two = known_peers.get(peer_list[i]);
-      let temp_peer_lat = temp_peer.latitude;
-      let temp_peer_long = temp_peer.longitude;
+      let temp_peer_key = peer_list[i];
+      let temp_peer_data = known_peers.get(peer_list[i]);
+      // let temp_peer_two = known_peers.get(peer_list[i]);
+      // console.log("Peer_list[i]", peer_list[i]);
+      let temp_peer_lat = temp_peer_data.latitude;
+      let temp_peer_long = temp_peer_data.longitude;
       let dist = getDistanceBetweenCoords(
         peer_lat,
         peer_long,
@@ -394,9 +421,13 @@ function peerScan(peer_list) {
         temp_peer_long
       );
       let meters = Math.floor(dist * 1000);
-      console.log("peerScan meters:", meters);
+      // console.log("peerScan meters:", meters);
       if (meters < dist_threshold) {
-        updatePeers(peer_key, temp_peer_two);
+        let peer_one = peer_key;
+        let peer_two = temp_peer_key;
+        // console.log("peer_one", peer_o
+        // console.log("peer_two", peer_two);
+        updatePeers(peer_one, peer_two);
       }
     }
 
@@ -415,8 +446,10 @@ function updatePeers(peer_one, peer_two) {
 
   let p_one_prox = peer_proximity.get(peer_one);
   let p_two_prox = peer_proximity.get(peer_two);
-  peer_proximity.set(peer_one, p_one_prox++);
-  peer_proximity.set(peer_two, p_two_prox++);
+  p_one_prox++;
+  p_two_prox++;
+  peer_proximity.set(peer_one, p_one_prox);
+  peer_proximity.set(peer_two, p_two_prox);
 
   if (debug == 1) {
     console.log("updatePeers p_one_prox:", p_one_prox);
@@ -428,12 +461,13 @@ function updatePeers(peer_one, peer_two) {
 
 function initPeers() {
   let peer_list = [];
-  for (const key of known_peers.entries()) {
+  for (const [key, value] of known_peers.entries()) {
+    // console.log("Key:", key);
     peer_list.push(key);
     peer_proximity.set(key, 0);
   }
-  console.log("peer_proximity:", peer_proximity);
-  console.log("peer_list:", peer_list);
+  // console.log("peer_proximity:", peer_proximity);
+  // console.log("peer_list:", peer_list);
   return peer_list;
 }
 
@@ -467,12 +501,13 @@ function run() {
   connectBots(bot_list);
   setInterval(() => {
     startBots(bot_list);
-    console.log("this works!");
+    // console.log("this works!");
   }, 1000);
-  // setInterval(() => {
-  //   updateTable();
-  //   console.log("Table updated");
-  // }, 1000);
+  mqttConnect();
+  setInterval(() => {
+    updateTable();
+    // console.log("Table updated");
+  }, 1000);
 }
 
 run();
