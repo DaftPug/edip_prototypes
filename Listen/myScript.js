@@ -6,12 +6,21 @@ var known_peers = new Map();
 var peer_proximity = new Map();
 var dist_threshold = 30;
 
+/*
+
+1 punkt: 55.659606, 12.591805
+2 punkter: 55.659511, 12.591769
+3 punkter: 55.659414, 12.591737
+4 punkter; 55.659316, 12.591706
+5 punkter; 55.659219, 12.591675
+  */
+
 var bot_coordinates = [
-  { latitude: 55.659499, longitude: 12.591931 },
-  { latitude: 55.659445, longitude: 12.59191 },
-  { latitude: 55.659423, longitude: 12.591892 },
-  { latitude: 55.659349, longitude: 12.591882 },
-  { latitude: 55.659349, longitude: 12.591852 },
+  { latitude: 55.659606, longitude: 12.591805 },
+  { latitude: 55.659511, longitude: 12.591769 },
+  { latitude: 55.659414, longitude: 12.591737 },
+  { latitude: 55.659316, longitude: 12.591706 },
+  { latitude: 55.659219, longitude: 12.591675 },
 ];
 var bot_list = [];
 
@@ -82,10 +91,18 @@ class FakePerson {
 function createBots(list) {
   let i = 1;
   bot_coordinates.forEach((element) => {
-    let bot_name = "test_id_0" + i;
+    for (var j = 0, len = i; j < len; j++) {
+      let name = "" + i + j + "";
+      let bot_name = "test_id_0" + name;
+      let new_bot = new FakePerson(
+        bot_name,
+        element.latitude,
+        element.longitude
+      );
+      bot_list.push(new_bot);
+    }
+
     i++;
-    let new_bot = new FakePerson(bot_name, element.latitude, element.longitude);
-    bot_list.push(new_bot);
   });
 }
 
@@ -359,17 +376,15 @@ function scanProximity() {
 }
 
 function peerScan(peer_list) {
+  let debug = 1;
   if (peer_list.length > 1) {
     let peer_key = peer_list.shift();
     let peer = known_peers.get(peer_key[0]);
-    console.log("peerScan key:", peer_key);
-    console.log("peerScan known_peers:", known_peers);
-    console.log("peerScan peer:", peer);
-    console.log("peerScan peer_list:", peer_list);
     let peer_lat = peer.latitude;
     let peer_long = peer.longitude;
     for (var i = 0, len = peer_list.length; i < len; i++) {
       let temp_peer = known_peers.get(peer_list[i][0]);
+      let temp_peer_two = known_peers.get(peer_list[i]);
       let temp_peer_lat = temp_peer.latitude;
       let temp_peer_long = temp_peer.longitude;
       let dist = getDistanceBetweenCoords(
@@ -379,27 +394,36 @@ function peerScan(peer_list) {
         temp_peer_long
       );
       let meters = Math.floor(dist * 1000);
-      if (meters > dist_threshold) {
-        updatePeers(peer, temp_peer);
+      console.log("peerScan meters:", meters);
+      if (meters < dist_threshold) {
+        updatePeers(peer_key, temp_peer_two);
       }
     }
 
+    if (debug == 0) {
+      console.log("peerScan key:", peer_key);
+      console.log("peerScan known_peers:", known_peers);
+      console.log("peerScan peer:", peer);
+      console.log("peerScan peer_list:", peer_list);
+    }
     peerScan(peer_list);
   }
 }
 
 function updatePeers(peer_one, peer_two) {
   let debug = 1;
-  if (debug == 1) {
-    console.log();
-    console.log();
-    console.log();
-    console.log();
-  }
+
   let p_one_prox = peer_proximity.get(peer_one);
   let p_two_prox = peer_proximity.get(peer_two);
   peer_proximity.set(peer_one, p_one_prox++);
   peer_proximity.set(peer_two, p_two_prox++);
+
+  if (debug == 1) {
+    console.log("updatePeers p_one_prox:", p_one_prox);
+    console.log("updatePeers p_two_prox:", p_two_prox);
+    console.log("updatePeers peer_one:", peer_one);
+    console.log("updatePeers peer_two:", peer_two);
+  }
 }
 
 function initPeers() {
@@ -445,10 +469,10 @@ function run() {
     startBots(bot_list);
     console.log("this works!");
   }, 1000);
-  setInterval(() => {
-    updateTable();
-    console.log("Table updated");
-  }, 1000);
+  // setInterval(() => {
+  //   updateTable();
+  //   console.log("Table updated");
+  // }, 1000);
 }
 
 run();
